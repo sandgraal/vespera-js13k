@@ -169,11 +169,12 @@
       }
       #dialogue-overlay {
         position: absolute;
-        bottom: 25px;
+        bottom: 102px;
         left: 50%;
         transform: translateX(-50%);
-        width: 740px;
+        width: 720px;
         max-width: 92%;
+        z-index: 50;
         background: rgba(12, 8, 22, 0.95);
         border: 2px solid #a855f7;
         border-radius: 8px;
@@ -343,14 +344,13 @@
           <div class="hud-sub">
             <span>ROOM: <b id="room-text">1-1</b></span>
             <span>SHARDS: <b id="shard-text">0</b></span>
-            <span class="version-badge">v1.2 EXPANSION</span>
           </div>
         </div>
         <div id="hud-top-right" class="hud-panel">
           <canvas id="minimap" width="110" height="110"></canvas>
         </div>
         <div id="boss-hud">
-          <div id="boss-name">ARCH-PRECEPTOR VALERIUS - THE RADIANT HERALD</div>
+          <div id="boss-name">ARCH-PRECEPTOR VALERIUS, THE RADIANT HERALD</div>
           <div id="boss-bar-wrap">
             <div id="boss-bar-fill"></div>
           </div>
@@ -363,7 +363,7 @@
           <div class="skill-slot">
             <div class="skill-cooldown" id="cd-pulse"></div>
             <div class="skill-key">R-CLICK</div>
-            <div class="skill-name">ECLIPSE<br />PULSE</div>
+            <div class="skill-name">SOMBER<br />RAINBOW</div>
           </div>
           <div class="skill-slot">
             <div class="skill-cooldown" id="cd-scythe"></div>
@@ -398,10 +398,6 @@
             Lead the misunderstood obsidian unicorn to extinguish the Solar
             Spire and claim uninterrupted peace.
             <br /><br />
-            <b style="color: #d8b4f8"
-              >v1.2: Added Q-Scythe, Chime Bellringers, Dash Ghosts & Warp Keys
-              [1-6]</b
-            >
           </div>
           <button
             id="start-btn"
@@ -413,14 +409,1608 @@
           </button>
           <div class="controls-hint">
             WASD: Move &nbsp;|&nbsp; Mouse: Lance &nbsp;|&nbsp; Right-Click:
-            Pulse &nbsp;|&nbsp; Q: Scythe &nbsp;|&nbsp; Space: Dash
-            &nbsp;|&nbsp; Keys 1-6: Room Warp
+            Rainbow (Grump Arc) &nbsp;|&nbsp; Q: Scythe &nbsp;|&nbsp; Space:
+            Dash &nbsp;|&nbsp; Keys 1-6: Room Warp
           </div>
         </div>
       </div>
     </div>
     <script>
-      window.onerror=function(e,t,l){var a=document.getElementById("error-banner");a&&(a.style.display="block",a.innerText="Error: "+e+" ("+l+")")},function(){var e=Math,t=e.cos,l=e.sin,a=e.hypot,i=e.atan2,r=e.random,o=e.PI,n=2*o,s=document.getElementById("gameCanvas"),f=s.getContext("2d"),d=document.getElementById("minimap").getContext("2d"),c=document.getElementById("health-bar"),y=document.getElementById("health-text"),h=document.getElementById("room-text"),u=document.getElementById("shard-text"),p=document.getElementById("boss-hud"),m=document.getElementById("boss-name"),x=document.getElementById("boss-bar-fill"),v=document.getElementById("cd-pulse"),b=document.getElementById("cd-scythe"),g=document.getElementById("cd-dash"),T=document.getElementById("dialogue-overlay"),E=document.getElementById("dialogue-speaker"),S=document.getElementById("dialogue-text"),w=document.getElementById("boon-overlay"),R=document.getElementById("boon-cards"),k=document.getElementById("screen-overlay"),P=document.getElementById("start-btn"),I=document.getElementById("error-banner"),C=null;function A(){try{if(!C){var e=window.AudioContext||window.webkitAudioContext;e&&(C=new e)}C&&"suspended"===C.state&&C.resume()}catch(e){}}function B(t,l,a,i,r){if(C)try{var o=C.currentTime,n=C.createOscillator(),s=C.createGain();n.type=i||"sine",n.frequency.setValueAtTime(t,o),l&&n.frequency.exponentialRampToValueAtTime(e.max(1,l),o+a),s.gain.setValueAtTime(r||.2,o),s.gain.linearRampToValueAtTime(.01,o+a),n.connect(s),s.connect(C.destination),n.start(o),n.stop(o+a)}catch(e){}}function H(e){"shoot"===e?B(480,80,.12,"triangle",.2):"hit"===e?B(140,40,.08,"sawtooth",.25):"dash"===e?B(280,540,.15,"sine",.15):"pulse"===e?B(120,30,.35,"sawtooth",.4):"scythe"===e?B(340,60,.25,"sawtooth",.35):"bell"===e?B(880,440,.5,"sine",.18):"kill"===e?B(520,130,.2,"sine",.25):"boss_roar"===e?B(180,90,.6,"sawtooth",.4):"strike_charge"===e?B(600,950,.7,"sine",.12):"strike_blast"===e?B(200,35,.4,"sawtooth",.35):"boon"===e&&[330,440,523,659].forEach((function(e,t){setTimeout((function(){B(e,.9*e,.2,"sine",.15)}),70*t)}))}var L=0;var D=[["VESPERA","Year 342 of Mandatory Sunshine. I asked for earplugs; they declared me an apocalyptic threat. Time to extinguish the Solar Spire."]],V=[["ARCH-PRECEPTOR VALERIUS","HALT, VOID-BRINGER! Suffer the searing majesty of Unbroken Joy!"],["VESPERA","I am begging you to turn the chandelier down to 50%."]],W=[["VESPERA","The Solar Core is offline. The world plunges into peaceful twilight. Finally... 500 years of sleep."]],O=[["EDICT #402","Sighing above 40dB is high treason against Joy.","My resting breath is 42dB. I was condemned at birth."],["EDICT #719","All blackout curtains have been confiscated for the Solar Choir.","I draped a wet burlap sack over my head. They arrested the sack."],["GRIEVANCE #91","Neighbor was caught reading a somber poem. Immediate glitter-bombing requested.","The neighbor was probably just reading an IKEA assembly manual."],["EDICT #88","Gothic architecture and somber cello pieces are acoustic terrorism.","I just wanted to play minor pentatonic scales in peace."]],N=[["ricochet","Nihilistic Ricochet","Umbral Lances bounce off walls 2x with +25% speed.",'"The void refuses to respect arbitrary drywall."'],["metalHooves","Heavy Metal Hooves","Phase Dash leaves a cursed flame wake that burns pursuers.",'"They complained about hoof clatter. Now they get brimstone."'],["terminalInsomnia","Terminal Insomnia","Below 50% HP, fire rate & move speed increase by +45%.",'"The fourth stage of sleep deprivation is weaponized focus."'],["weaponizedApathy","Weaponized Apathy","Standing still for 0.4s emits an aura slowing bullets by 60%.",'"Refusing to participate is a potent tactical doctrine."'],["eclipseSingularity","Eclipse Singularity","Pulse cooldown reduced by 40% and sucks foes into the void.",'"A localized collapse of compulsory cheer."'],["darkCatharsis","Dark Catharsis","Slain zealots have 35% chance to drop healing Somber Tears.",'"Schadenfreude is surprisingly medicinal."'],["piercingCynicism","Piercing Cynicism","Umbral Lances pierce infinitely through all enemies.",'"Sharp truths slice clean through toxic positivity."']],q={x:480,y:320,vx:0,vy:0,speed:220,radius:26,hp:100,maxHp:100,shards:0,facing:0,gallop:0,fireTimer:0,fireRate:.13,pulseTimer:0,pulseCd:2.2,scytheTimer:0,scytheCd:4.5,dashTimer:0,dashCd:1,isDashing:!1,dashDur:.22,dashRem:0,invTimer:0,stillTimer:0,boons:{}};var U=[{id:0,type:"start",cleared:!0,tId:0},{id:1,type:"combat",cleared:!1,w:2},{id:2,type:"altar",cleared:!1,tId:1},{id:3,type:"combat",cleared:!1,w:3,tId:2},{id:4,type:"altar",cleared:!1,tId:3},{id:5,type:"boss",cleared:!1,w:1}],G=0,M=null,Y=0,_=null,z=0,j=0,F={},X={x:480,y:320,ld:!1,rd:!1},J=[],K=[],Q=[],Z=[],$=[],ee=[],te=[],le=[],ae=[],ie=[],re=[],oe=0,ne=null;function se(t){z=e.min(z+t,16)}function fe(e,t){re=e,oe=0,ne=t,e[0]&&(E.innerText=e[0][0],S.innerText=e[0][1],T.style.display="block")}function de(){d.clearRect(0,0,110,110),U.forEach((function(e,t){var l=10+t%3*18,a=25+18*Math.floor(t/3);d.fillStyle=t===Y?"#e9d5ff":e.cleared?"#9333ea":"#3b1d6e",d.fillRect(l,a,14,14),"boss"===e.type&&(d.fillStyle="#fc0",d.fillText("★",l+2,a+11))}))}function ce(e,t,l){return"cherub"===e?{type:e,x:t,y:l,r:16,hp:45,mhp:45,spd:85,at:1.5*r(),ar:2.2,col:"#fd5"}:"flagellant"===e?{type:e,x:t,y:l,r:18,hp:65,mhp:65,spd:145,at:0,ar:1.5,col:"#f73"}:"turret"===e?{type:e,x:t,y:l,r:22,hp:90,mhp:90,spd:0,at:0,ar:2.8,ang:0,col:"#fc0"}:"bellringer"===e?{type:e,x:t,y:l,r:20,hp:110,mhp:110,spd:70,at:0,ar:3,shieldRadius:150,col:"#fde047"}:void 0}function ye(e){if(Y=e,M=U[e],h.innerText=e+1+"/6",J=[],K=[],ee=[],te=[],le=[],ae=[],ie=[],Z=[],$=[],q.x=140,q.y=320,"start"===M.type)ee.push(ce("bellringer",520,320)),ee.push(ce("cherub",580,260));else if("altar"===M.type)te.push({x:480,y:320,r:32,u:!1});else if("combat"===M.type)for(var t=1===e?4:7,l=0;l<t;l++){var a=l%2==0?"cherub":e>=3&&1===l?"bellringer":e>=3&&l%3==0?"turret":"flagellant";ee.push(ce(a,450+400*r(),100+440*r()))}else"boss"===M.type&&(p.style.display="block",fe(V,(function(){H("boss_roar"),_={type:"boss",x:780,y:320,r:38,hp:850,mhp:850,spd:95,at:0,ot:0,phase:1,spin:0,lt:0,fl:!1,la:0,col:"#ffd700",banted2:!1,banted3:!1},ee.push(_)})));void 0!==M.tId&&O[M.tId]&&le.push({x:"start"===M.type?320:380,y:180,r:22,rd:!1,data:O[M.tId]}),de()}function he(){if("boss"===M.type&&(!_||_.hp<=0))return p.style.display="none",void fe(W,(function(){G=4,k.style.display="flex";var e=document.querySelector(".title-main");e&&(e.innerText="VICTORY: THE ETERNAL NAP");var t=document.querySelector(".title-sub");t&&(t.innerHTML="The Solar Spire has fallen. The world enters a peaceful twilight.<br><br>Vespera curls up for 500 years of quiet sleep."),P.innerText="REST AGAIN (RESTART)"}));M.cleared||0!==ee.length||(M.cleared=!0,H("boon"),de())}window.addEventListener("keydown",(function(e){var t=e.key.toLowerCase();F[t]=!0," "!==t&&"enter"!==t||window.dismissDialogue(),1===G&&("1"===t?ye(0):"2"===t?ye(1):"3"===t?ye(2):"4"===t?ye(3):"5"===t?ye(4):"6"===t&&ye(5))})),window.addEventListener("keyup",(function(e){F[e.key.toLowerCase()]=!1})),s.addEventListener("mousemove",(function(e){var t=s.getBoundingClientRect();X.x=(e.clientX-t.left)*(960/t.width),X.y=(e.clientY-t.top)*(640/t.height)})),s.addEventListener("mousedown",(function(e){A(),0===e.button&&(X.ld=!0,window.dismissDialogue()),2===e.button&&(e.preventDefault(),X.rd=!0)})),s.addEventListener("mouseup",(function(e){0===e.button&&(X.ld=!1),2===e.button&&(X.rd=!1)})),s.addEventListener("contextmenu",(function(e){e.preventDefault()})),window.dismissDialogue=function(){if(T&&"block"===T.style.display)if(++oe<re.length)E.innerText=re[oe][0],S.innerText=re[oe][1];else if(T.style.display="none",ne){var e=ne;ne=null,e()}};var ue=performance.now();function pe(s){if(1===G)if(j>0)j-=s;else{var f=_?_.phase:1;!function(e,t,l){if(C){var a=t?3===l?.7:1.3:3.2;if((L+=e)>a){L=0;var i=t?3===l?[147,175,196,220,261]:[110,131,147,165]:[73,87,98,110];B(i[Math.floor(r()*i.length)],0,.9*a,3===l?"sawtooth":"triangle",.045)}}}(s,M&&"boss"===M.type,f);var d=0,h=0;(F.w||F.arrowup)&&(h-=1),(F.s||F.arrowdown)&&(h+=1),(F.a||F.arrowleft)&&(d-=1),(F.d||F.arrowright)&&(d+=1);var p=0!==d||0!==h;if(p){q.stillTimer=0,q.gallop+=14*s;var T=a(d,h),E=q.speed*(q.boons.terminalInsomnia&&q.hp<.5*q.maxHp?1.45:1);q.vx=d/T*E,q.vy=h/T*E,r()<.3&&Q.push({x:q.x-20*t(q.facing)+10*(r()-.5),y:q.y-20*l(q.facing)+10*(r()-.5),vx:20*(r()-.5),vy:20*(r()-.5),r:3*r()+1.5,col:"#7c3aed",a:.6,d:2})}else q.stillTimer+=s,q.vx=0,q.vy=0;var S=q.boons.weaponizedApathy&&q.stillTimer>.4;q.dashTimer>0&&(q.dashTimer-=s),(F[" "]||F.shift)&&q.dashTimer<=0&&p&&(q.isDashing=!0,q.dashRem=q.dashDur,q.dashTimer=q.dashCd,q.invTimer=q.dashDur+.05,H("dash"),se(3)),q.isDashing?(q.dashRem-=s,q.x+=2.4*q.vx*s,q.y+=2.4*q.vy*s,Z.push({x:q.x,y:q.y,facing:q.facing,a:.55,gallop:q.gallop}),Q.push({x:q.x,y:q.y,vx:30*(r()-.5),vy:30*(r()-.5),r:6*r()+3,col:q.boons.metalHooves?"#ff2255":"#c084fc",a:.85,d:2.5}),q.dashRem<=0&&(q.isDashing=!1)):(q.x+=q.vx*s,q.y+=q.vy*s),q.x=e.max(48,e.min(912,q.x)),q.y=e.max(48,e.min(592,q.y)),q.facing=i(X.y-q.y,X.x-q.x),q.fireTimer>0&&(q.fireTimer-=s);var k=q.fireRate*(q.boons.terminalInsomnia&&q.hp<.5*q.maxHp?.65:1);if(X.ld&&q.fireTimer<=0){q.fireTimer=k,H("shoot"),se(1.5);var P=q.boons.ricochet?650:540;J.push({x:q.x+36*t(q.facing),y:q.y+36*l(q.facing),vx:t(q.facing)*P,vy:l(q.facing)*P,r:5,dmg:26,prc:q.boons.piercingCynicism?99:1,bnc:q.boons.ricochet?2:0,col:"#f43f5e"})}q.pulseTimer>0&&(q.pulseTimer-=s);var I=q.pulseCd*(q.boons.eclipseSingularity?.6:1);if(X.rd&&q.pulseTimer<=0){q.pulseTimer=I,H("pulse"),se(6),K=K.filter((function(e){return a(e.x-q.x,e.y-q.y)>140})),ee.forEach((function(e){a(e.x-q.x,e.y-q.y)<140+e.r&&(e.hp-=40,Q.push({x:e.x,y:e.y,vx:0,vy:-30,txt:"-40",col:"#e879f9",lf:.6}),q.boons.eclipseSingularity&&(e.x=q.x+.4*(e.x-q.x),e.y=q.y+.4*(e.y-q.y)))}));for(var A=0;A<n;A+=.2)Q.push({x:q.x,y:q.y,vx:280*t(A),vy:280*l(A),r:4,col:"#d946ef",a:1,d:2.2})}q.scytheTimer>0&&(q.scytheTimer-=s),F.q&&q.scytheTimer<=0&&(q.scytheTimer=q.scytheCd,H("scythe"),se(5),$.push({x:q.x,y:q.y,r:90,a:1}),K=K.filter((function(e){return a(e.x-q.x,e.y-q.y)>95})),ee.forEach((function(e){if(a(e.x-q.x,e.y-q.y)<95+e.r){e.hp-=60,j=.04;var r=i(e.y-q.y,e.x-q.x);e.x+=50*t(r),e.y+=50*l(r),Q.push({x:e.x,y:e.y,vx:0,vy:-35,txt:"-60",col:"#f43f5e",lf:.6})}}))),M.cleared&&q.x>900&&e.abs(q.y-320)<60&&Y+1<U.length&&ye(Y+1),te.forEach((function(e){!e.u&&a(q.x-e.x,q.y-e.y)<e.r+q.radius&&(e.u=!0,M.cleared=!0,G=2,w.style.display="flex",R.innerHTML="",N.filter((function(e){return!q.boons[e[0]]})).sort((function(){return.5-r()})).slice(0,3).forEach((function(e){var t=document.createElement("div");t.className="boon-card",t.innerHTML='<div class="boon-title">'+e[1]+'</div><div class="boon-desc">'+e[2]+'</div><div class="boon-flavor">'+e[3]+"</div>",t.onclick=function(){q.boons[e[0]]=!0,H("boon"),w.style.display="none",G=1,fe([["VESPERA - ON "+e[1].toUpperCase(),e[3]]])},R.appendChild(t)})))})),le.forEach((function(e){!e.rd&&a(q.x-e.x,q.y-e.y)<e.r+q.radius&&(e.rd=!0,H("boon"),fe([[e.data[0],e.data[1]],["VESPERA",e.data[2]]]))}));for(var D=ie.length-1;D>=0;D--){var V=ie[D];if(V.t+=s,!V.bl&&V.t>=V.ct){V.bl=!0,H("strike_blast"),se(7),a(q.x-V.x,q.y-V.y)<V.r+q.radius&&q.invTimer<=0&&me(25);for(var W=0;W<18;W++)Q.push({x:V.x,y:V.y,vx:220*(r()-.5),vy:220*(r()-.5),r:5*r()+2,col:"#fe0",a:1,d:2.5})}V.t>=V.ct+.35&&ie.splice(D,1)}for(var O=J.length-1;O>=0;O--){var re=J[O];if(re.x+=re.vx*s,re.y+=re.vy*s,re.x<48||re.x>912){if(!(re.bnc>0)){J.splice(O,1);continue}re.vx*=-1,re.bnc--}if(re.y<48||re.y>592){if(!(re.bnc>0)){J.splice(O,1);continue}re.vy*=-1,re.bnc--}for(var oe=ee.length-1;oe>=0;oe--){var ne=ee[oe];if(a(re.x-ne.x,re.y-ne.y)<re.r+ne.r){var de=re.dmg;if(ne.isShielded&&(de=e.floor(.25*de)),ne.hp-=de,H("hit"),Q.push({x:ne.x,y:ne.y,vx:40*(r()-.5),vy:-35,txt:"-"+de,col:ne.isShielded?"#fe0":"#c084fc",lf:.5}),re.prc--,re.prc<=0){J.splice(O,1);break}}}}for(var ce=0;ce<ee.length;ce++){var ue=ee[ce];if("bellringer"!==ue.type){for(var pe=!1,xe=0;xe<ee.length;xe++){var ve=ee[xe];if("bellringer"===ve.type&&a(ue.x-ve.x,ue.y-ve.y)<ve.shieldRadius){pe=!0;break}}ue.isShielded=pe}}for(var be=ee.length-1;be>=0;be--){var ge=ee[be];if(ge.hp<=0){H("kill"),q.shards+="boss"===ge.type?50:5,u.innerText=q.shards,j="boss"===ge.type||"bellringer"===ge.type?.05:.02,q.boons.darkCatharsis&&r()<.35&&ae.push({x:ge.x,y:ge.y,r:10,val:15});for(var Te=0;Te<16;Te++)Q.push({x:ge.x,y:ge.y,vx:180*(r()-.5),vy:180*(r()-.5),r:4*r()+2,col:ge.col,a:1,d:2});ee.splice(be,1),he()}else{var Ee=i(q.y-ge.y,q.x-ge.x),Se=a(q.x-ge.x,q.y-ge.y);if("cherub"===ge.type){if(Se<180?(ge.x-=t(Ee)*ge.spd*s,ge.y-=l(Ee)*ge.spd*s):Se>300&&(ge.x+=t(Ee)*ge.spd*s,ge.y+=l(Ee)*ge.spd*s),ge.at+=s,ge.at>=ge.ar){ge.at=0;for(var we=-.28;we<=.28;we+=.28)K.push({x:ge.x,y:ge.y,vx:180*t(Ee+we),vy:180*l(Ee+we),r:5,col:"#fd5",dmg:12})}}else if("flagellant"===ge.type)ge.x+=t(Ee)*ge.spd*s,ge.y+=l(Ee)*ge.spd*s,Se<ge.r+q.radius&&q.invTimer<=0&&me(15);else if("turret"===ge.type){if(ge.ang+=1.5*s,ge.at+=s,ge.at>=ge.ar){ge.at=0;for(var Re=0;Re<4;Re++)K.push({x:ge.x,y:ge.y,vx:160*t(ge.ang+Re*o/2),vy:160*l(ge.ang+Re*o/2),r:6,col:"#fc0",dmg:14})}}else if("bellringer"===ge.type)ge.x-=t(Ee)*ge.spd*s,ge.y-=l(Ee)*ge.spd*s,ge.x=e.max(80,e.min(880,ge.x)),ge.y=e.max(80,e.min(560,ge.y)),ge.at+=s,ge.at>=ge.ar&&(ge.at=0,H("bell"),se(2));else if("boss"===ge.type){var ke=ge.hp/ge.mhp;x.style.width=e.max(0,100*ke)+"%",ge.at+=s,ge.spin+=s*(3===ge.phase?3.6:2.2),ke>.66?(ge.phase=1,ge.col="#ffd700",m.innerText="ARCH-PRECEPTOR VALERIUS - PHASE 1: SOLAR LITURGY"):ke>.33?(ge.banted2||(ge.banted2=!0,j=.08,fe([["ARCH-PRECEPTOR VALERIUS","Behold the Solar Radiance! Why do you resist eternal enlightenment?!"],["VESPERA","Because you have irradiated the planet and destroyed my circadian rhythm."]])),ge.phase=2,ge.col="#f90",m.innerText="ARCH-PRECEPTOR VALERIUS - PHASE 2: ORBITAL RETRIBUTION"):(ge.banted3||(ge.banted3=!0,j=.1,fe([["ARCH-PRECEPTOR VALERIUS","I shall purge the very concept of shadows from creation!"],["VESPERA","You are being remarkably dramatic for someone in municipal lighting maintenance."]])),ge.phase=3,ge.col="#f25",m.innerText="ARCH-PRECEPTOR VALERIUS - PHASE 3: THE ENRAGED SERMON");var Pe=3===ge.phase?1.4:1;if(ge.y=320+l(.0025*performance.now()*Pe)*(3===ge.phase?160:120),ge.x=760+90*t(.0012*performance.now()*Pe),1===ge.phase&&ge.at>=1.3){ge.at=0;for(var Ie=0;Ie<8;Ie++)K.push({x:ge.x,y:ge.y,vx:190*t(ge.spin+Ie*o/4),vy:190*l(ge.spin+Ie*o/4),r:6,col:"#fe0",dmg:15})}else if(2===ge.phase){if(ge.ot+=s,ge.ot>=2.4&&(ge.ot=0,H("strike_charge"),ie.push({x:q.x,y:q.y,r:48,t:0,ct:.8,bl:!1}),ie.push({x:q.x+120*(r()-.5),y:q.y+120*(r()-.5),r:48,t:0,ct:.9,bl:!1})),ge.at>=1.2){ge.at=0;for(var Ce=-.36;Ce<=.36;Ce+=.18)K.push({x:ge.x,y:ge.y,vx:230*t(Ee+Ce),vy:230*l(Ee+Ce),r:7,col:"#f80",dmg:18})}}else if(3===ge.phase){if(ge.ot+=s,ge.ot>=1.8&&(ge.ot=0,H("strike_charge"),ie.push({x:q.x,y:q.y,r:56,t:0,ct:.7,bl:!1})),ge.at>=.85){ge.at=0;for(var Ae=0;Ae<12;Ae++)K.push({x:ge.x,y:ge.y,vx:210*t(ge.spin+Ae*o/6),vy:210*l(ge.spin+Ae*o/6),r:6.5,col:"#f25",dmg:20})}if(ge.lt+=s,ge.lt>=4)if(ge.fl=!0,ge.la+=1.6*s,ge.lt>=5.5)ge.fl=!1,ge.lt=0,ge.la=0;else{var Be=Ee+.8*l(ge.la),He=ge.x+800*t(Be),Le=ge.y+800*l(Be);e.abs((Le-ge.y)*q.x-(He-ge.x)*q.y+He*ge.y-Le*ge.x)/a(Le-ge.y,He-ge.x)<q.radius+14&&q.invTimer<=0&&me(24)}}}}}for(var De=K.length-1;De>=0;De--){var Ve=K[De],We=S?.4:1;Ve.x+=Ve.vx*We*s,Ve.y+=Ve.vy*We*s,Ve.x<10||Ve.x>950||Ve.y<10||Ve.y>630?K.splice(De,1):a(Ve.x-q.x,Ve.y-q.y)<Ve.r+q.radius&&q.invTimer<=0&&(me(Ve.dmg),K.splice(De,1))}for(var Oe=ae.length-1;Oe>=0;Oe--){var Ne=ae[Oe];a(q.x-Ne.x,q.y-Ne.y)<Ne.r+q.radius&&(q.hp=e.min(q.maxHp,q.hp+Ne.val),H("boon"),Q.push({x:q.x,y:q.y-20,vx:0,vy:-30,txt:"+"+Ne.val+" HP",col:"#4ade80",lf:.6}),ae.splice(Oe,1))}for(var qe=Q.length-1;qe>=0;qe--){var Ue=Q[qe];Ue.txt?(Ue.y+=Ue.vy*s,Ue.lf-=s,Ue.lf<=0&&Q.splice(qe,1)):(Ue.x+=Ue.vx*s,Ue.y+=Ue.vy*s,Ue.a-=Ue.d*s,Ue.a<=0&&Q.splice(qe,1))}for(var Ge=Z.length-1;Ge>=0;Ge--)Z[Ge].a-=2.5*s,Z[Ge].a<=0&&Z.splice(Ge,1);for(var Me=$.length-1;Me>=0;Me--)$[Me].a-=3.2*s,$[Me].a<=0&&$.splice(Me,1);q.invTimer>0&&(q.invTimer-=s),z>0&&(z=e.max(0,z-25*s)),c.style.width=e.max(0,q.hp/q.maxHp*100)+"%",y.innerText="HP: "+e.max(0,e.ceil(q.hp))+" / "+q.maxHp,v.style.height=q.pulseTimer/I*100+"%",b.style.height=q.scytheTimer/q.scytheCd*100+"%",g.style.height=q.dashTimer/q.dashCd*100+"%"}}function me(e){if(q.hp-=e,q.invTimer=.35,H("hit"),se(8),Q.push({x:q.x,y:q.y-20,vx:0,vy:-30,txt:"-"+e,col:"#ef4444",lf:.6}),q.hp<=0){G=3,k.style.display="flex";var t=document.querySelector(".title-main");t&&(t.innerText="DEFEATED BY GLITTER");var l=document.querySelector(".title-sub");l&&(l.innerText="The Choir of Perpetual Smiles has overwhelmed you. Mandatory joy continues unabated."),P.innerText="TRY AGAIN (RESTART)"}}ue=performance.now();window.startGame=function(){try{A(),k.style.display="none",q.hp=q.maxHp,q.shards=0,q.x=140,q.y=320,q.vx=0,q.vy=0,q.invTimer=0,q.dashTimer=0,q.pulseTimer=0,q.scytheTimer=0,q.boons={},U.forEach((function(e){e.cleared=!1})),U[0].cleared=!0,G=1,ye(0),fe(D)}catch(e){I.style.display="block",I.innerText="Start Error: "+e.message}},requestAnimationFrame((function a(o){var s=e.min((o-ue)/1e3,.05);ue=o,pe(s),function(){f.save(),f.clearRect(0,0,960,640),z>0&&f.translate((r()-.5)*z,(r()-.5)*z),f.fillStyle="#0e0a1a",f.fillRect(40,40,880,560),f.strokeStyle="#22163d",f.lineWidth=1;for(var a=40;a<920;a+=40)f.beginPath(),f.moveTo(a,40),f.lineTo(a,600),f.stroke();for(var o=40;o<600;o+=40)f.beginPath(),f.moveTo(40,o),f.lineTo(920,o),f.stroke();if(f.strokeStyle="#7c3aed",f.lineWidth=6,f.strokeRect(40,40,880,560),M&&M.cleared&&(f.fillStyle="#d946ef",f.fillRect(914,275,10,90),f.shadowColor="#f472b6",f.shadowBlur=18,f.fillStyle="#fff",f.font="bold 12px sans-serif",f.fillText("EXIT →",862,325),f.shadowBlur=0),te.forEach((function(e){f.fillStyle=e.u?"#3b1d6e":"#9333ea",f.beginPath(),f.arc(e.x,e.y,e.r,0,n),f.fill(),f.strokeStyle="#f3e8ff",f.lineWidth=3,f.stroke(),f.fillStyle="#fff",f.font="bold 11px sans-serif",f.fillText(e.u?"EXHAUSTED":"⭐ [STEP: BOON]",e.x-52,e.y+4)})),le.forEach((function(e){f.save(),f.fillStyle=e.rd?"#2d1b4e":"#9333ea",f.strokeStyle="#e9d5ff",f.lineWidth=2,f.strokeRect(e.x-20,e.y-20,40,40),f.fillRect(e.x-20,e.y-20,40,40),f.fillStyle="#fff",f.font="bold 14px sans-serif",f.fillText("📜",e.x-8,e.y+6),f.fillStyle="#e9d5ff",f.font="10px sans-serif",f.fillText(e.rd?"READ":"[EDICT]",e.x-20,e.y+32),f.restore()})),ae.forEach((function(e){f.fillStyle="#4ade80",f.beginPath(),f.arc(e.x,e.y,e.r,0,n),f.fill(),f.shadowColor="#86efac",f.shadowBlur=10,f.fillStyle="#fff",f.fillText("♥",e.x-4,e.y+4),f.shadowBlur=0})),ie.forEach((function(t){f.save();var l=e.min(1,t.t/t.ct);f.strokeStyle=t.bl?"#fff":"#fe0",f.lineWidth=t.bl?8:2,f.beginPath(),f.arc(t.x,t.y,t.r*(t.bl?1.1:l),0,n),f.stroke(),f.fillStyle=t.bl?"#ffffffb3":"rgba(255,200,0,"+.4*l+")",f.beginPath(),f.arc(t.x,t.y,t.r,0,n),f.fill(),f.restore()})),$.forEach((function(e){f.save(),f.strokeStyle="#f43f5e",f.lineWidth=10*e.a,f.globalAlpha=e.a,f.shadowColor="#ff2255",f.shadowBlur=24,f.beginPath(),f.arc(e.x,e.y,e.r,0,n),f.stroke(),f.restore()})),Z.forEach((function(e){f.save(),f.translate(e.x,e.y),f.rotate(e.facing),f.globalAlpha=.4*e.a,f.fillStyle="#9333ea",f.beginPath(),f.ellipse(-6,0,24,15,0,0,n),f.fill(),f.restore()})),Q.forEach((function(e){e.txt?(f.fillStyle=e.col,f.font="bold 13px sans-serif",f.fillText(e.txt,e.x,e.y)):(f.fillStyle=e.col,f.globalAlpha=e.a,f.beginPath(),f.arc(e.x,e.y,e.r,0,n),f.fill(),f.globalAlpha=1)})),J.forEach((function(e){f.fillStyle=e.col,f.shadowColor="#f43f5e",f.shadowBlur=12,f.beginPath(),f.arc(e.x,e.y,e.r,0,n),f.fill(),f.shadowBlur=0})),K.forEach((function(e){f.fillStyle=e.col,f.shadowColor=e.col,f.shadowBlur=8,f.beginPath(),f.arc(e.x,e.y,e.r,0,n),f.fill(),f.shadowBlur=0})),ee.forEach((function(e){if(f.save(),f.translate(e.x,e.y),"bellringer"===e.type)f.strokeStyle="#fde047",f.lineWidth=2,f.beginPath(),f.arc(0,0,e.shieldRadius,0,n),f.stroke(),f.fillStyle="rgba(253, 224, 71, 0.08)",f.fill(),f.fillStyle="#fde047",f.shadowColor="#eab308",f.shadowBlur=15,f.beginPath(),f.arc(0,0,e.r,0,n),f.fill(),f.shadowBlur=0,f.fillStyle="#fff",f.font="bold 14px sans-serif",f.fillText("🔔",-7,5);else if("boss"===e.type){if(f.fillStyle=e.col,f.shadowColor=e.col,f.shadowBlur=28,f.beginPath(),f.arc(0,0,e.r,0,n),f.fill(),f.shadowBlur=0,f.strokeStyle="#fff",f.lineWidth=3===e.phase?6:4,f.beginPath(),f.arc(0,0,e.r+8,0,n),f.stroke(),f.fillStyle="#fff",f.beginPath(),f.arc(0,-6,6,0,n),f.fill(),e.fl){var a=i(q.y-e.y,q.x-e.x)+.8*l(e.la);f.strokeStyle="#f05",f.lineWidth=18,f.shadowColor="#f25",f.shadowBlur=20,f.beginPath(),f.moveTo(0,0),f.lineTo(900*t(a),900*l(a)),f.stroke(),f.shadowBlur=0}}else f.fillStyle=e.col,f.beginPath(),f.arc(0,0,e.r,0,n),f.fill(),e.isShielded?(f.strokeStyle="#fde047",f.lineWidth=3,f.stroke()):(f.strokeStyle="#fff",f.lineWidth=2,f.stroke());f.fillStyle="#f36",f.fillRect(-e.r,-e.r-12,e.hp/e.mhp*(2*e.r),4),f.restore()})),1===G||2===G){f.save(),f.translate(q.x,q.y);var s=f.createRadialGradient(0,0,10,0,0,44);s.addColorStop(0,"#d946ef66"),s.addColorStop(.6,"#7c3aed40"),s.addColorStop(1,"#0000"),f.fillStyle=s,f.beginPath(),f.arc(0,0,44,0,n),f.fill(),f.rotate(q.facing),q.invTimer>0&&Math.floor(performance.now()/60)%2==0&&(f.globalAlpha=.4);var d=4*l(.8*q.gallop);f.fillStyle="#d946ef",f.beginPath(),f.moveTo(-22,0),f.quadraticCurveTo(-34,-8+d,-42,-4+d),f.quadraticCurveTo(-32,6+d,-22,2),f.closePath(),f.fill(),f.strokeStyle="#f43f5e",f.lineWidth=1.5,f.stroke();var c=7*l(q.gallop);f.fillStyle="#1e163b",f.strokeStyle="#e879f9",f.lineWidth=2,f.fillRect(6,-16+c,8,5),f.strokeRect(6,-16+c,8,5),f.fillRect(6,11-c,8,5),f.strokeRect(6,11-c,8,5),f.fillRect(-18,-16-c,8,5),f.strokeRect(-18,-16-c,8,5),f.fillRect(-18,11+c,8,5),f.strokeRect(-18,11+c,8,5),f.fillStyle="#130d24",f.strokeStyle="#c084fc",f.lineWidth=2.5,f.beginPath(),f.ellipse(-6,0,24,15,0,0,n),f.fill(),f.stroke(),f.fillStyle="#1e1338",f.beginPath(),f.moveTo(4,-10),f.lineTo(24,-6),f.lineTo(28,0),f.lineTo(24,6),f.lineTo(4,10),f.closePath(),f.fill(),f.strokeStyle="#d8b4f8",f.lineWidth=2,f.stroke(),f.fillStyle="#f43f5e",f.fillRect(25,-2,2,1.5),f.fillRect(25,1,2,1.5),f.fillStyle="#2d1b54",f.strokeStyle="#f472b6",f.lineWidth=1.5,f.beginPath(),f.moveTo(8,-10),f.lineTo(14,-18),f.lineTo(16,-9),f.closePath(),f.fill(),f.stroke(),f.beginPath(),f.moveTo(8,10),f.lineTo(14,18),f.lineTo(16,9),f.closePath(),f.fill(),f.stroke(),f.fillStyle="#9333ea",f.beginPath(),f.moveTo(-12,-7),f.lineTo(-8,-14),f.lineTo(-2,-8),f.lineTo(4,-15),f.lineTo(10,-8),f.lineTo(6,0),f.closePath(),f.fill(),f.strokeStyle="#f43f5e",f.lineWidth=1.5,f.stroke(),f.fillStyle="#fff",f.shadowColor="#f43f5e",f.shadowBlur=18,f.beginPath(),f.moveTo(18,-4),f.lineTo(42,0),f.lineTo(18,4),f.closePath(),f.fill(),f.shadowBlur=0,f.strokeStyle="#d946ef",f.lineWidth=2,f.beginPath(),f.moveTo(24,-3),f.lineTo(26,3),f.moveTo(32,-2),f.lineTo(34,2),f.stroke(),f.fillStyle="#f43f5e",f.shadowColor="#f25",f.shadowBlur=10,f.beginPath(),f.ellipse(18,-5,3.5,1.5,.3,0,n),f.fill(),f.beginPath(),f.ellipse(18,5,3.5,1.5,-.3,0,n),f.fill(),f.shadowBlur=0,f.restore()}var y=f.createRadialGradient(q.x,q.y,140,q.x,q.y,480);y.addColorStop(0,"#0000"),y.addColorStop(1,"#06040cb8"),f.fillStyle=y,f.fillRect(0,0,960,640),f.restore()}(),requestAnimationFrame(a)}))}();
+      ((window.onerror = function (e, t, a) {
+        var l = document.getElementById("error-banner");
+        l &&
+          ((l.style.display = "block"),
+          (l.innerText = "Error: " + e + " (" + a + ")"));
+      }),
+        (function () {
+          var e = Math,
+            t = e.cos,
+            a = e.sin,
+            l = e.hypot,
+            r = e.atan2,
+            i = e.random,
+            o = e.PI,
+            n = 2 * o,
+            s = document.getElementById("gameCanvas"),
+            f = s.getContext("2d"),
+            d = document.getElementById("minimap").getContext("2d"),
+            c = document.getElementById("health-bar"),
+            y = document.getElementById("health-text"),
+            h = document.getElementById("room-text"),
+            u = document.getElementById("shard-text"),
+            p = document.getElementById("boss-hud"),
+            x = document.getElementById("boss-name"),
+            m = document.getElementById("boss-bar-fill"),
+            v = document.getElementById("cd-pulse"),
+            b = document.getElementById("cd-scythe"),
+            g = document.getElementById("cd-dash"),
+            T = document.getElementById("dialogue-overlay"),
+            S = document.getElementById("dialogue-speaker"),
+            E = document.getElementById("dialogue-text"),
+            w = document.getElementById("boon-overlay"),
+            R = document.getElementById("boon-cards"),
+            k = document.getElementById("screen-overlay"),
+            P = document.getElementById("start-btn"),
+            C = document.getElementById("error-banner"),
+            I = null;
+          function B() {
+            try {
+              if (!I) {
+                var e = window.AudioContext || window.webkitAudioContext;
+                e && (I = new e());
+              }
+              I && "suspended" === I.state && I.resume();
+            } catch (e) {}
+          }
+          function A(t, a, l, r, i) {
+            if (I)
+              try {
+                var o = I.currentTime,
+                  n = I.createOscillator(),
+                  s = I.createGain();
+                ((n.type = r || "sine"),
+                  n.frequency.setValueAtTime(t, o),
+                  a &&
+                    n.frequency.exponentialRampToValueAtTime(
+                      e.max(1, a),
+                      o + l,
+                    ),
+                  s.gain.setValueAtTime(i || 0.2, o),
+                  s.gain.linearRampToValueAtTime(0.01, o + l),
+                  n.connect(s),
+                  s.connect(I.destination),
+                  n.start(o),
+                  n.stop(o + l));
+              } catch (e) {}
+          }
+          function H(e) {
+            "shoot" === e
+              ? A(480, 80, 0.12, "triangle", 0.2)
+              : "hit" === e
+                ? A(140, 40, 0.08, "sawtooth", 0.25)
+                : "dash" === e
+                  ? A(280, 540, 0.15, "sine", 0.15)
+                  : "pulse" === e || "rainbow" === e
+                    ? ([523, 587, 659, 698, 783, 880].forEach(function (e, t) {
+                        setTimeout(function () {
+                          A(e, 1.05 * e, 0.15, "sine", 0.12);
+                        }, 25 * t);
+                      }),
+                      setTimeout(function () {
+                        A(110, 55, 0.4, "triangle", 0.25);
+                      }, 200))
+                    : "scythe" === e
+                      ? A(340, 60, 0.25, "sawtooth", 0.35)
+                      : "bell" === e
+                        ? A(880, 440, 0.5, "sine", 0.18)
+                        : "kill" === e
+                          ? A(520, 130, 0.2, "sine", 0.25)
+                          : "boss_roar" === e
+                            ? A(180, 90, 0.6, "sawtooth", 0.4)
+                            : "strike_charge" === e
+                              ? A(600, 950, 0.7, "sine", 0.12)
+                              : "strike_blast" === e
+                                ? A(200, 35, 0.4, "sawtooth", 0.35)
+                                : "boon" === e &&
+                                  [330, 440, 523, 659].forEach(function (e, t) {
+                                    setTimeout(function () {
+                                      A(e, 0.9 * e, 0.2, "sine", 0.15);
+                                    }, 70 * t);
+                                  });
+          }
+          var L = 0;
+          var D = [
+              [
+                "VESPERA",
+                "Year 342 of Mandatory Sunshine. I asked for earplugs; they declared me an apocalyptic threat. Time to extinguish the Solar Spire.",
+              ],
+            ],
+            W = [
+              [
+                "ARCH-PRECEPTOR VALERIUS",
+                "HALT, VOID-BRINGER! Suffer the searing majesty of Unbroken Joy!",
+              ],
+              [
+                "VESPERA",
+                "I am begging you to turn the chandelier down to 50%.",
+              ],
+            ],
+            V = [
+              [
+                "VESPERA",
+                "The Solar Core is offline. The world plunges into peaceful twilight. Finally... 500 years of sleep.",
+              ],
+            ],
+            O = [
+              [
+                "EDICT #402",
+                "Sighing above 40dB is high treason against Joy.",
+                "My resting breath is 42dB. I was condemned at birth.",
+              ],
+              [
+                "EDICT #719",
+                "All blackout curtains have been confiscated for the Solar Choir.",
+                "I draped a wet burlap sack over my head. They arrested the sack.",
+              ],
+              [
+                "GRIEVANCE #91",
+                "Neighbor was caught reading a somber poem. Immediate glitter-bombing requested.",
+                "The neighbor was probably just reading an IKEA assembly manual.",
+              ],
+              [
+                "EDICT #88",
+                "Gothic architecture and somber cello pieces are acoustic terrorism.",
+                "I just wanted to play minor pentatonic scales in peace.",
+              ],
+            ],
+            N = [
+              [
+                "ricochet",
+                "Nihilistic Ricochet",
+                "Umbral Lances bounce off walls 2x with +25% speed.",
+                '"The void refuses to respect arbitrary drywall."',
+              ],
+              [
+                "metalHooves",
+                "Heavy Metal Hooves",
+                "Phase Dash leaves a cursed flame wake that burns pursuers.",
+                '"They complained about hoof clatter. Now they get brimstone."',
+              ],
+              [
+                "terminalInsomnia",
+                "Terminal Insomnia",
+                "Below 50% HP, fire rate & move speed increase by +45%.",
+                '"The fourth stage of sleep deprivation is weaponized focus."',
+              ],
+              [
+                "weaponizedApathy",
+                "Weaponized Apathy",
+                "Standing still for 0.4s emits an aura slowing bullets by 60%.",
+                '"Refusing to participate is a potent tactical doctrine."',
+              ],
+              [
+                "eclipseSingularity",
+                "Eclipse Singularity",
+                "Pulse cooldown reduced by 40% and sucks foes into the void.",
+                '"A localized collapse of compulsory cheer."',
+              ],
+              [
+                "darkCatharsis",
+                "Dark Catharsis",
+                "Slain zealots have 35% chance to drop healing Somber Tears.",
+                '"Schadenfreude is surprisingly medicinal."',
+              ],
+              [
+                "piercingCynicism",
+                "Piercing Cynicism",
+                "Umbral Lances pierce infinitely through all enemies.",
+                '"Sharp truths slice clean through toxic positivity."',
+              ],
+            ],
+            M = {
+              x: 480,
+              y: 320,
+              vx: 0,
+              vy: 0,
+              speed: 220,
+              radius: 26,
+              hp: 100,
+              maxHp: 100,
+              shards: 0,
+              facing: 0,
+              gallop: 0,
+              fireTimer: 0,
+              fireRate: 0.13,
+              pulseTimer: 0,
+              pulseCd: 2.2,
+              scytheTimer: 0,
+              scytheCd: 4.5,
+              dashTimer: 0,
+              dashCd: 1,
+              isDashing: !1,
+              dashDur: 0.22,
+              dashRem: 0,
+              invTimer: 0,
+              stillTimer: 0,
+              boons: {},
+            };
+          var U = [
+              { id: 0, type: "start", cleared: !0, tId: 0 },
+              { id: 1, type: "combat", cleared: !1, w: 2 },
+              { id: 2, type: "altar", cleared: !1, tId: 1 },
+              { id: 3, type: "combat", cleared: !1, w: 3, tId: 2 },
+              { id: 4, type: "altar", cleared: !1, tId: 3 },
+              { id: 5, type: "boss", cleared: !1, w: 1 },
+            ],
+            q = 0,
+            G = null,
+            Y = 0,
+            _ = null,
+            z = 0,
+            j = 0,
+            F = {},
+            X = { x: 480, y: 320, ld: !1, rd: !1 },
+            J = [],
+            K = [],
+            Q = [],
+            Z = [],
+            $ = [],
+            ee = [],
+            te = [],
+            ae = [],
+            le = [],
+            re = [],
+            ie = [],
+            oe = [],
+            ne = 0,
+            se = null;
+          function fe(t) {
+            z = e.min(z + t, 16);
+          }
+          function de(e, t) {
+            ((oe = e),
+              (ne = 0),
+              (se = t),
+              e[0] &&
+                ((S.innerText = e[0][0]),
+                (E.innerText = e[0][1]),
+                (T.style.display = "block")));
+          }
+          function ce() {
+            (d.clearRect(0, 0, 110, 110),
+              U.forEach(function (e, t) {
+                var a = 10 + (t % 3) * 18,
+                  l = 25 + 18 * Math.floor(t / 3);
+                ((d.fillStyle =
+                  t === Y ? "#e9d5ff" : e.cleared ? "#9333ea" : "#3b1d6e"),
+                  d.fillRect(a, l, 14, 14),
+                  "boss" === e.type &&
+                    ((d.fillStyle = "#fc0"), d.fillText("★", a + 2, l + 11)));
+              }));
+          }
+          function ye(e, t, a) {
+            return "cherub" === e
+              ? {
+                  type: e,
+                  x: t,
+                  y: a,
+                  r: 16,
+                  hp: 45,
+                  mhp: 45,
+                  spd: 85,
+                  at: 1.5 * i(),
+                  ar: 2.2,
+                  col: "#fd5",
+                }
+              : "flagellant" === e
+                ? {
+                    type: e,
+                    x: t,
+                    y: a,
+                    r: 18,
+                    hp: 65,
+                    mhp: 65,
+                    spd: 145,
+                    at: 0,
+                    ar: 1.5,
+                    col: "#f73",
+                  }
+                : "turret" === e
+                  ? {
+                      type: e,
+                      x: t,
+                      y: a,
+                      r: 22,
+                      hp: 90,
+                      mhp: 90,
+                      spd: 0,
+                      at: 0,
+                      ar: 2.8,
+                      ang: 0,
+                      col: "#fc0",
+                    }
+                  : "bellringer" === e
+                    ? {
+                        type: e,
+                        x: t,
+                        y: a,
+                        r: 20,
+                        hp: 110,
+                        mhp: 110,
+                        spd: 70,
+                        at: 0,
+                        ar: 3,
+                        shieldRadius: 150,
+                        col: "#fde047",
+                      }
+                    : void 0;
+          }
+          function he(e) {
+            if (
+              ((Y = e),
+              (G = U[e]),
+              (h.innerText = e + 1 + "/6"),
+              (J = []),
+              (K = []),
+              (te = []),
+              (ae = []),
+              (le = []),
+              (re = []),
+              (ie = []),
+              (Z = []),
+              ($ = []),
+              (ee = []),
+              (M.x = 140),
+              (M.y = 320),
+              "start" === G.type)
+            )
+              (te.push(ye("bellringer", 520, 320)),
+                te.push(ye("cherub", 580, 260)));
+            else if ("altar" === G.type)
+              ae.push({ x: 480, y: 320, r: 32, u: !1 });
+            else if ("combat" === G.type)
+              for (var t = 1 === e ? 4 : 7, a = 0; a < t; a++) {
+                var l =
+                  a % 2 == 0
+                    ? "cherub"
+                    : e >= 3 && 1 === a
+                      ? "bellringer"
+                      : e >= 3 && a % 3 == 0
+                        ? "turret"
+                        : "flagellant";
+                te.push(ye(l, 450 + 400 * i(), 100 + 440 * i()));
+              }
+            else
+              "boss" === G.type &&
+                ((p.style.display = "block"),
+                de(W, function () {
+                  (H("boss_roar"),
+                    (_ = {
+                      type: "boss",
+                      x: 780,
+                      y: 320,
+                      r: 38,
+                      hp: 850,
+                      mhp: 850,
+                      spd: 95,
+                      at: 0,
+                      ot: 0,
+                      phase: 1,
+                      spin: 0,
+                      lt: 0,
+                      fl: !1,
+                      la: 0,
+                      col: "#ffd700",
+                      banted2: !1,
+                      banted3: !1,
+                    }),
+                    te.push(_));
+                }));
+            (void 0 !== G.tId &&
+              O[G.tId] &&
+              le.push({
+                x: "start" === G.type ? 320 : 380,
+                y: 180,
+                r: 22,
+                rd: !1,
+                data: O[G.tId],
+              }),
+              ce());
+          }
+          function ue() {
+            if ("boss" === G.type && (!_ || _.hp <= 0))
+              return (
+                (p.style.display = "none"),
+                void de(V, function () {
+                  ((q = 4), (k.style.display = "flex"));
+                  var e = document.querySelector(".title-main");
+                  e && (e.innerText = "VICTORY: THE ETERNAL NAP");
+                  var t = document.querySelector(".title-sub");
+                  (t &&
+                    (t.innerHTML =
+                      "The Solar Spire has fallen. The world enters a peaceful twilight.<br><br>Vespera curls up for 500 years of quiet sleep."),
+                    (P.innerText = "REST AGAIN (RESTART)"));
+                })
+              );
+            G.cleared || 0 !== te.length || ((G.cleared = !0), H("boon"), ce());
+          }
+          (window.addEventListener("keydown", function (e) {
+            var t = e.key.toLowerCase();
+            ((F[t] = !0),
+              (" " !== t && "enter" !== t) || window.dismissDialogue(),
+              1 === q &&
+                ("1" === t
+                  ? he(0)
+                  : "2" === t
+                    ? he(1)
+                    : "3" === t
+                      ? he(2)
+                      : "4" === t
+                        ? he(3)
+                        : "5" === t
+                          ? he(4)
+                          : "6" === t && he(5)));
+          }),
+            window.addEventListener("keyup", function (e) {
+              F[e.key.toLowerCase()] = !1;
+            }),
+            s.addEventListener("mousemove", function (e) {
+              var t = s.getBoundingClientRect();
+              ((X.x = (e.clientX - t.left) * (960 / t.width)),
+                (X.y = (e.clientY - t.top) * (640 / t.height)));
+            }),
+            s.addEventListener("mousedown", function (e) {
+              (B(),
+                0 === e.button && ((X.ld = !0), window.dismissDialogue()),
+                2 === e.button && (e.preventDefault(), (X.rd = !0)));
+            }),
+            s.addEventListener("mouseup", function (e) {
+              (0 === e.button && (X.ld = !1), 2 === e.button && (X.rd = !1));
+            }),
+            s.addEventListener("contextmenu", function (e) {
+              e.preventDefault();
+            }),
+            (window.dismissDialogue = function () {
+              if (T && "block" === T.style.display)
+                if (++ne < oe.length)
+                  ((S.innerText = oe[ne][0]), (E.innerText = oe[ne][1]));
+                else if (((T.style.display = "none"), se)) {
+                  var e = se;
+                  ((se = null), e());
+                }
+            }));
+          var pe = performance.now();
+          function xe(s) {
+            if (1 === q)
+              if (j > 0) j -= s;
+              else {
+                var f = _ ? _.phase : 1;
+                !(function (e, t, a) {
+                  if (I) {
+                    var l = t ? (3 === a ? 0.7 : 1.3) : 3.2;
+                    if ((L += e) > l) {
+                      L = 0;
+                      var r = t
+                        ? 3 === a
+                          ? [147, 175, 196, 220, 261]
+                          : [110, 131, 147, 165]
+                        : [73, 87, 98, 110];
+                      A(
+                        r[Math.floor(i() * r.length)],
+                        0,
+                        0.9 * l,
+                        3 === a ? "sawtooth" : "triangle",
+                        0.045,
+                      );
+                    }
+                  }
+                })(s, G && "boss" === G.type, f);
+                var d = 0,
+                  h = 0;
+                ((F.w || F.arrowup) && (h -= 1),
+                  (F.s || F.arrowdown) && (h += 1),
+                  (F.a || F.arrowleft) && (d -= 1),
+                  (F.d || F.arrowright) && (d += 1));
+                var p = 0 !== d || 0 !== h;
+                if (p) {
+                  ((M.stillTimer = 0), (M.gallop += 14 * s));
+                  var T = l(d, h),
+                    S =
+                      M.speed *
+                      (M.boons.terminalInsomnia && M.hp < 0.5 * M.maxHp
+                        ? 1.45
+                        : 1);
+                  ((M.vx = (d / T) * S),
+                    (M.vy = (h / T) * S),
+                    i() < 0.3 &&
+                      Q.push({
+                        x: M.x - 20 * t(M.facing) + 10 * (i() - 0.5),
+                        y: M.y - 20 * a(M.facing) + 10 * (i() - 0.5),
+                        vx: 20 * (i() - 0.5),
+                        vy: 20 * (i() - 0.5),
+                        r: 3 * i() + 1.5,
+                        col: "#7c3aed",
+                        a: 0.6,
+                        d: 2,
+                      }));
+                } else ((M.stillTimer += s), (M.vx = 0), (M.vy = 0));
+                var E = M.boons.weaponizedApathy && M.stillTimer > 0.4;
+                (M.dashTimer > 0 && (M.dashTimer -= s),
+                  (F[" "] || F.shift) &&
+                    M.dashTimer <= 0 &&
+                    p &&
+                    ((M.isDashing = !0),
+                    (M.dashRem = M.dashDur),
+                    (M.dashTimer = M.dashCd),
+                    (M.invTimer = M.dashDur + 0.05),
+                    H("dash"),
+                    fe(3)),
+                  M.isDashing
+                    ? ((M.dashRem -= s),
+                      (M.x += 2.4 * M.vx * s),
+                      (M.y += 2.4 * M.vy * s),
+                      Z.push({
+                        x: M.x,
+                        y: M.y,
+                        facing: M.facing,
+                        a: 0.55,
+                        gallop: M.gallop,
+                      }),
+                      Q.push({
+                        x: M.x,
+                        y: M.y,
+                        vx: 30 * (i() - 0.5),
+                        vy: 30 * (i() - 0.5),
+                        r: 6 * i() + 3,
+                        col: M.boons.metalHooves ? "#ff2255" : "#c084fc",
+                        a: 0.85,
+                        d: 2.5,
+                      }),
+                      M.dashRem <= 0 && (M.isDashing = !1))
+                    : ((M.x += M.vx * s), (M.y += M.vy * s)),
+                  (M.x = e.max(48, e.min(912, M.x))),
+                  (M.y = e.max(48, e.min(592, M.y))),
+                  (M.facing = r(X.y - M.y, X.x - M.x)),
+                  M.fireTimer > 0 && (M.fireTimer -= s));
+                var k =
+                  M.fireRate *
+                  (M.boons.terminalInsomnia && M.hp < 0.5 * M.maxHp ? 0.65 : 1);
+                if (X.ld && M.fireTimer <= 0) {
+                  ((M.fireTimer = k), H("shoot"), fe(1.5));
+                  var P = M.boons.ricochet ? 650 : 540;
+                  J.push({
+                    x: M.x + 36 * t(M.facing),
+                    y: M.y + 36 * a(M.facing),
+                    vx: t(M.facing) * P,
+                    vy: a(M.facing) * P,
+                    r: 5,
+                    dmg: 26,
+                    prc: M.boons.piercingCynicism ? 99 : 1,
+                    bnc: M.boons.ricochet ? 2 : 0,
+                    col: "#f43f5e",
+                  });
+                }
+                M.pulseTimer > 0 && (M.pulseTimer -= s);
+                var C = M.pulseCd * (M.boons.eclipseSingularity ? 0.6 : 1);
+                if (X.rd && M.pulseTimer <= 0) {
+                  ((M.pulseTimer = C),
+                    H("rainbow"),
+                    fe(5),
+                    ee.push({ x: M.x, y: M.y, facing: M.facing, r: 240, a: 1 }),
+                    (K = K.filter(function (t) {
+                      for (
+                        var a = l(t.x - M.x, t.y - M.y),
+                          i = r(t.y - M.y, t.x - M.x),
+                          s = e.abs(i - M.facing);
+                        s > o;
+                      )
+                        s = e.abs(s - n);
+                      return !(a < 240 && s < 0.75);
+                    })),
+                    te.forEach(function (t) {
+                      for (
+                        var a = l(t.x - M.x, t.y - M.y),
+                          i = r(t.y - M.y, t.x - M.x),
+                          s = e.abs(i - M.facing);
+                        s > o;
+                      )
+                        s = e.abs(s - n);
+                      if (a < 240 + t.r && s < 0.75) {
+                        var f = 35;
+                        (t.isShielded && (f = e.floor(0.25 * f)),
+                          (t.hp -= f),
+                          (t.grumpyTimer = 10),
+                          Q.push({
+                            x: t.x,
+                            y: t.y - 25,
+                            vx: 0,
+                            vy: -30,
+                            txt: "GRUMPY! (10s)",
+                            col: "#60a5fa",
+                            lf: 0.8,
+                          }),
+                          Q.push({
+                            x: t.x,
+                            y: t.y,
+                            vx: 0,
+                            vy: -20,
+                            txt: "-" + f,
+                            col: "#f43f5e",
+                            lf: 0.5,
+                          }));
+                      }
+                    }));
+                  for (
+                    var B = [
+                        "#ff3b30",
+                        "#ff9500",
+                        "#ffcc00",
+                        "#34c759",
+                        "#32ade6",
+                        "#af52de",
+                      ],
+                      D = -0.7;
+                    D <= 0.7;
+                    D += 0.08
+                  ) {
+                    var W = B[Math.floor(i() * B.length)],
+                      V = 40 + 200 * i();
+                    Q.push({
+                      x: M.x + t(M.facing + D) * V,
+                      y: M.y + a(M.facing + D) * V,
+                      vx: t(M.facing + D) * (100 + 150 * i()),
+                      vy: a(M.facing + D) * (100 + 150 * i()),
+                      r: 3 + 3 * i(),
+                      col: W,
+                      a: 1,
+                      d: 2,
+                    });
+                  }
+                }
+                (M.scytheTimer > 0 && (M.scytheTimer -= s),
+                  F.q &&
+                    M.scytheTimer <= 0 &&
+                    ((M.scytheTimer = M.scytheCd),
+                    H("scythe"),
+                    fe(5),
+                    $.push({ x: M.x, y: M.y, r: 90, a: 1 }),
+                    (K = K.filter(function (e) {
+                      return l(e.x - M.x, e.y - M.y) > 95;
+                    })),
+                    te.forEach(function (e) {
+                      if (l(e.x - M.x, e.y - M.y) < 95 + e.r) {
+                        ((e.hp -= 60), (j = 0.04));
+                        var i = r(e.y - M.y, e.x - M.x);
+                        ((e.x += 50 * t(i)),
+                          (e.y += 50 * a(i)),
+                          Q.push({
+                            x: e.x,
+                            y: e.y,
+                            vx: 0,
+                            vy: -35,
+                            txt: "-60",
+                            col: "#f43f5e",
+                            lf: 0.6,
+                          }));
+                      }
+                    })),
+                  G.cleared &&
+                    M.x > 900 &&
+                    e.abs(M.y - 320) < 60 &&
+                    Y + 1 < U.length &&
+                    he(Y + 1),
+                  ae.forEach(function (e) {
+                    !e.u &&
+                      l(M.x - e.x, M.y - e.y) < e.r + M.radius &&
+                      ((e.u = !0),
+                      (G.cleared = !0),
+                      (q = 2),
+                      (w.style.display = "flex"),
+                      (R.innerHTML = ""),
+                      N.filter(function (e) {
+                        return !M.boons[e[0]];
+                      })
+                        .sort(function () {
+                          return 0.5 - i();
+                        })
+                        .slice(0, 3)
+                        .forEach(function (e) {
+                          var t = document.createElement("div");
+                          ((t.className = "boon-card"),
+                            (t.innerHTML =
+                              '<div class="boon-title">' +
+                              e[1] +
+                              '</div><div class="boon-desc">' +
+                              e[2] +
+                              '</div><div class="boon-flavor">' +
+                              e[3] +
+                              "</div>"),
+                            (t.onclick = function () {
+                              ((M.boons[e[0]] = !0),
+                                H("boon"),
+                                (w.style.display = "none"),
+                                (q = 1),
+                                de([
+                                  ["VESPERA - ON " + e[1].toUpperCase(), e[3]],
+                                ]));
+                            }),
+                            R.appendChild(t));
+                        }));
+                  }),
+                  le.forEach(function (e) {
+                    !e.rd &&
+                      l(M.x - e.x, M.y - e.y) < e.r + M.radius &&
+                      ((e.rd = !0),
+                      H("boon"),
+                      de([
+                        [e.data[0], e.data[1]],
+                        ["VESPERA", e.data[2]],
+                      ]));
+                  }));
+                for (var O = ie.length - 1; O >= 0; O--) {
+                  var oe = ie[O];
+                  if (((oe.t += s), !oe.bl && oe.t >= oe.ct)) {
+                    ((oe.bl = !0),
+                      H("strike_blast"),
+                      fe(7),
+                      l(M.x - oe.x, M.y - oe.y) < oe.r + M.radius &&
+                        M.invTimer <= 0 &&
+                        me(25));
+                    for (var ne = 0; ne < 18; ne++)
+                      Q.push({
+                        x: oe.x,
+                        y: oe.y,
+                        vx: 220 * (i() - 0.5),
+                        vy: 220 * (i() - 0.5),
+                        r: 5 * i() + 2,
+                        col: "#fe0",
+                        a: 1,
+                        d: 2.5,
+                      });
+                  }
+                  oe.t >= oe.ct + 0.35 && ie.splice(O, 1);
+                }
+                for (var se = J.length - 1; se >= 0; se--) {
+                  var ce = J[se];
+                  if (
+                    ((ce.x += ce.vx * s),
+                    (ce.y += ce.vy * s),
+                    ce.x < 48 || ce.x > 912)
+                  ) {
+                    if (!(ce.bnc > 0)) {
+                      J.splice(se, 1);
+                      continue;
+                    }
+                    ((ce.vx *= -1), ce.bnc--);
+                  }
+                  if (ce.y < 48 || ce.y > 592) {
+                    if (!(ce.bnc > 0)) {
+                      J.splice(se, 1);
+                      continue;
+                    }
+                    ((ce.vy *= -1), ce.bnc--);
+                  }
+                  for (var ye = te.length - 1; ye >= 0; ye--) {
+                    var pe = te[ye];
+                    if (l(ce.x - pe.x, ce.y - pe.y) < ce.r + pe.r) {
+                      var xe = ce.dmg;
+                      if (
+                        (pe.isShielded && (xe = e.floor(0.25 * xe)),
+                        (pe.hp -= xe),
+                        H("hit"),
+                        Q.push({
+                          x: pe.x,
+                          y: pe.y,
+                          vx: 40 * (i() - 0.5),
+                          vy: -35,
+                          txt: "-" + xe,
+                          col: pe.isShielded ? "#fe0" : "#c084fc",
+                          lf: 0.5,
+                        }),
+                        ce.prc--,
+                        ce.prc <= 0)
+                      ) {
+                        J.splice(se, 1);
+                        break;
+                      }
+                    }
+                  }
+                }
+                for (var ve = 0; ve < te.length; ve++) {
+                  var be = te[ve];
+                  if ("bellringer" !== be.type) {
+                    for (var ge = !1, Te = 0; Te < te.length; Te++) {
+                      var Se = te[Te];
+                      if (
+                        "bellringer" === Se.type &&
+                        l(be.x - Se.x, be.y - Se.y) < Se.shieldRadius
+                      ) {
+                        ge = !0;
+                        break;
+                      }
+                    }
+                    be.isShielded = ge;
+                  }
+                }
+                for (var Ee = te.length - 1; Ee >= 0; Ee--) {
+                  var we = te[Ee];
+                  if (we.hp <= 0) {
+                    (H("kill"),
+                      (M.shards += "boss" === we.type ? 50 : 5),
+                      (u.innerText = M.shards),
+                      (j =
+                        "boss" === we.type || "bellringer" === we.type
+                          ? 0.05
+                          : 0.02),
+                      M.boons.darkCatharsis &&
+                        i() < 0.35 &&
+                        re.push({ x: we.x, y: we.y, r: 10, val: 15 }));
+                    for (var Re = 0; Re < 16; Re++)
+                      Q.push({
+                        x: we.x,
+                        y: we.y,
+                        vx: 180 * (i() - 0.5),
+                        vy: 180 * (i() - 0.5),
+                        r: 4 * i() + 2,
+                        col: we.col,
+                        a: 1,
+                        d: 2,
+                      });
+                    (te.splice(Ee, 1), ue());
+                  } else {
+                    var ke = r(M.y - we.y, M.x - we.x),
+                      Pe = l(M.x - we.x, M.y - we.y);
+                    we.grumpyTimer > 0 &&
+                      ((we.grumpyTimer -= s),
+                      i() < 0.03 &&
+                        Q.push({
+                          x: we.x + 20 * (i() - 0.5),
+                          y: we.y - 18,
+                          vx: 0,
+                          vy: -15,
+                          txt: "...ugh",
+                          col: "#94a3b8",
+                          lf: 0.5,
+                        }));
+                    var Ce = we.grumpyTimer > 0,
+                      Ie = Ce ? 0.5 : 1,
+                      Be = Ce ? 0.55 : 1,
+                      Ae = Ce ? 0.6 : 1;
+                    if ("cherub" === we.type) {
+                      if (
+                        (Pe < 180
+                          ? ((we.x -= t(ke) * we.spd * Ie * s),
+                            (we.y -= a(ke) * we.spd * Ie * s))
+                          : Pe > 300 &&
+                            ((we.x += t(ke) * we.spd * Ie * s),
+                            (we.y += a(ke) * we.spd * Ie * s)),
+                        (we.at += s * Be),
+                        we.at >= we.ar)
+                      ) {
+                        we.at = 0;
+                        for (var He = -0.28; He <= 0.28; He += 0.28)
+                          K.push({
+                            x: we.x,
+                            y: we.y,
+                            vx: 180 * t(ke + He),
+                            vy: 180 * a(ke + He),
+                            r: 5,
+                            col: Ce ? "#94a3b8" : "#fd5",
+                            dmg: e.floor(12 * Ae),
+                          });
+                      }
+                    } else if ("flagellant" === we.type)
+                      ((we.x += t(ke) * we.spd * Ie * s),
+                        (we.y += a(ke) * we.spd * Ie * s),
+                        Pe < we.r + M.radius &&
+                          M.invTimer <= 0 &&
+                          me(e.floor(15 * Ae)));
+                    else if ("turret" === we.type) {
+                      if (
+                        ((we.ang += 1.5 * s * Ie),
+                        (we.at += s * Be),
+                        we.at >= we.ar)
+                      ) {
+                        we.at = 0;
+                        for (var Le = 0; Le < 4; Le++)
+                          K.push({
+                            x: we.x,
+                            y: we.y,
+                            vx: 160 * t(we.ang + (Le * o) / 2),
+                            vy: 160 * a(we.ang + (Le * o) / 2),
+                            r: 6,
+                            col: Ce ? "#94a3b8" : "#fc0",
+                            dmg: e.floor(14 * Ae),
+                          });
+                      }
+                    } else if ("bellringer" === we.type)
+                      ((we.x -= t(ke) * we.spd * Ie * s),
+                        (we.y -= a(ke) * we.spd * Ie * s),
+                        (we.x = e.max(80, e.min(880, we.x))),
+                        (we.y = e.max(80, e.min(560, we.y))),
+                        (we.at += s * Be),
+                        we.at >= we.ar && ((we.at = 0), H("bell"), fe(2)));
+                    else if ("boss" === we.type) {
+                      var De = we.hp / we.mhp;
+                      ((m.style.width = e.max(0, 100 * De) + "%"),
+                        (we.at += s),
+                        (we.spin += s * (3 === we.phase ? 3.6 : 2.2)),
+                        De > 0.66
+                          ? ((we.phase = 1),
+                            (we.col = "#ffd700"),
+                            (x.innerText =
+                              "ARCH-PRECEPTOR VALERIUS - PHASE 1: SOLAR LITURGY"))
+                          : De > 0.33
+                            ? (we.banted2 ||
+                                ((we.banted2 = !0),
+                                (j = 0.08),
+                                de([
+                                  [
+                                    "ARCH-PRECEPTOR VALERIUS",
+                                    "Behold the Solar Radiance! Why do you resist eternal enlightenment?!",
+                                  ],
+                                  [
+                                    "VESPERA",
+                                    "Because it is ruining my circadian rhythm.",
+                                  ],
+                                ])),
+                              (we.phase = 2),
+                              (we.col = "#f90"),
+                              (x.innerText =
+                                "ARCH-PRECEPTOR VALERIUS - PHASE 2: ORBITAL RETRIBUTION"))
+                            : (we.banted3 ||
+                                ((we.banted3 = !0),
+                                (j = 0.1),
+                                de([
+                                  [
+                                    "ARCH-PRECEPTOR VALERIUS",
+                                    "I shall purge the very concept of shadows from creation!",
+                                  ],
+                                  [
+                                    "VESPERA",
+                                    "You are being remarkably dramatic for someone in municipal lighting maintenance.",
+                                  ],
+                                ])),
+                              (we.phase = 3),
+                              (we.col = "#f25"),
+                              (x.innerText =
+                                "ARCH-PRECEPTOR VALERIUS - PHASE 3: THE ENRAGED SERMON")));
+                      var We = 3 === we.phase ? 1.4 : 1;
+                      if (
+                        ((we.y =
+                          320 +
+                          a(0.0025 * performance.now() * We) *
+                            (3 === we.phase ? 160 : 120)),
+                        (we.x = 760 + 90 * t(0.0012 * performance.now() * We)),
+                        1 === we.phase && we.at >= 1.3)
+                      ) {
+                        we.at = 0;
+                        for (var Ve = 0; Ve < 8; Ve++)
+                          K.push({
+                            x: we.x,
+                            y: we.y,
+                            vx: 190 * t(we.spin + (Ve * o) / 4),
+                            vy: 190 * a(we.spin + (Ve * o) / 4),
+                            r: 6,
+                            col: "#fe0",
+                            dmg: 15,
+                          });
+                      } else if (2 === we.phase) {
+                        if (
+                          ((we.ot += s),
+                          we.ot >= 2.4 &&
+                            ((we.ot = 0),
+                            H("strike_charge"),
+                            ie.push({
+                              x: M.x,
+                              y: M.y,
+                              r: 48,
+                              t: 0,
+                              ct: 0.8,
+                              bl: !1,
+                            }),
+                            ie.push({
+                              x: M.x + 120 * (i() - 0.5),
+                              y: M.y + 120 * (i() - 0.5),
+                              r: 48,
+                              t: 0,
+                              ct: 0.9,
+                              bl: !1,
+                            })),
+                          we.at >= 1.2)
+                        ) {
+                          we.at = 0;
+                          for (var Oe = -0.36; Oe <= 0.36; Oe += 0.18)
+                            K.push({
+                              x: we.x,
+                              y: we.y,
+                              vx: 230 * t(ke + Oe),
+                              vy: 230 * a(ke + Oe),
+                              r: 7,
+                              col: "#f80",
+                              dmg: 18,
+                            });
+                        }
+                      } else if (3 === we.phase) {
+                        if (
+                          ((we.ot += s),
+                          we.ot >= 1.8 &&
+                            ((we.ot = 0),
+                            H("strike_charge"),
+                            ie.push({
+                              x: M.x,
+                              y: M.y,
+                              r: 56,
+                              t: 0,
+                              ct: 0.7,
+                              bl: !1,
+                            })),
+                          we.at >= 0.85)
+                        ) {
+                          we.at = 0;
+                          for (var Ne = 0; Ne < 12; Ne++)
+                            K.push({
+                              x: we.x,
+                              y: we.y,
+                              vx: 210 * t(we.spin + (Ne * o) / 6),
+                              vy: 210 * a(we.spin + (Ne * o) / 6),
+                              r: 6.5,
+                              col: "#f25",
+                              dmg: 20,
+                            });
+                        }
+                        if (((we.lt += s), we.lt >= 4))
+                          if (((we.fl = !0), (we.la += 1.6 * s), we.lt >= 5.5))
+                            ((we.fl = !1), (we.lt = 0), (we.la = 0));
+                          else {
+                            var Me = ke + 0.8 * a(we.la),
+                              Ue = we.x + 800 * t(Me),
+                              qe = we.y + 800 * a(Me);
+                            e.abs(
+                              (qe - we.y) * M.x -
+                                (Ue - we.x) * M.y +
+                                Ue * we.y -
+                                qe * we.x,
+                            ) /
+                              l(qe - we.y, Ue - we.x) <
+                              M.radius + 14 &&
+                              M.invTimer <= 0 &&
+                              me(24);
+                          }
+                      }
+                    }
+                  }
+                }
+                for (var Ge = K.length - 1; Ge >= 0; Ge--) {
+                  var Ye = K[Ge],
+                    _e = E ? 0.4 : 1;
+                  ((Ye.x += Ye.vx * _e * s),
+                    (Ye.y += Ye.vy * _e * s),
+                    Ye.x < 10 || Ye.x > 950 || Ye.y < 10 || Ye.y > 630
+                      ? K.splice(Ge, 1)
+                      : l(Ye.x - M.x, Ye.y - M.y) < Ye.r + M.radius &&
+                        M.invTimer <= 0 &&
+                        (me(Ye.dmg), K.splice(Ge, 1)));
+                }
+                for (var ze = re.length - 1; ze >= 0; ze--) {
+                  var je = re[ze];
+                  l(M.x - je.x, M.y - je.y) < je.r + M.radius &&
+                    ((M.hp = e.min(M.maxHp, M.hp + je.val)),
+                    H("boon"),
+                    Q.push({
+                      x: M.x,
+                      y: M.y - 20,
+                      vx: 0,
+                      vy: -30,
+                      txt: "+" + je.val + " HP",
+                      col: "#4ade80",
+                      lf: 0.6,
+                    }),
+                    re.splice(ze, 1));
+                }
+                for (var Fe = Q.length - 1; Fe >= 0; Fe--) {
+                  var Xe = Q[Fe];
+                  Xe.txt
+                    ? ((Xe.y += Xe.vy * s),
+                      (Xe.lf -= s),
+                      Xe.lf <= 0 && Q.splice(Fe, 1))
+                    : ((Xe.x += Xe.vx * s),
+                      (Xe.y += Xe.vy * s),
+                      (Xe.a -= Xe.d * s),
+                      Xe.a <= 0 && Q.splice(Fe, 1));
+                }
+                for (var Je = Z.length - 1; Je >= 0; Je--)
+                  ((Z[Je].a -= 2.5 * s), Z[Je].a <= 0 && Z.splice(Je, 1));
+                for (var Ke = $.length - 1; Ke >= 0; Ke--)
+                  (($[Ke].a -= 3.2 * s), $[Ke].a <= 0 && $.splice(Ke, 1));
+                for (var Qe = ee.length - 1; Qe >= 0; Qe--)
+                  ((ee[Qe].a -= 2.2 * s), ee[Qe].a <= 0 && ee.splice(Qe, 1));
+                (M.invTimer > 0 && (M.invTimer -= s),
+                  z > 0 && (z = e.max(0, z - 25 * s)),
+                  (c.style.width = e.max(0, (M.hp / M.maxHp) * 100) + "%"),
+                  (y.innerText =
+                    "HP: " + e.max(0, e.ceil(M.hp)) + " / " + M.maxHp),
+                  (v.style.height = (M.pulseTimer / C) * 100 + "%"),
+                  (b.style.height = (M.scytheTimer / M.scytheCd) * 100 + "%"),
+                  (g.style.height = (M.dashTimer / M.dashCd) * 100 + "%"));
+              }
+          }
+          function me(e) {
+            if (
+              ((M.hp -= e),
+              (M.invTimer = 0.35),
+              H("hit"),
+              fe(8),
+              Q.push({
+                x: M.x,
+                y: M.y - 20,
+                vx: 0,
+                vy: -30,
+                txt: "-" + e,
+                col: "#ef4444",
+                lf: 0.6,
+              }),
+              M.hp <= 0)
+            ) {
+              ((q = 3), (k.style.display = "flex"));
+              var t = document.querySelector(".title-main");
+              t && (t.innerText = "DEFEATED BY GLITTER");
+              var a = document.querySelector(".title-sub");
+              (a &&
+                (a.innerText =
+                  "The Choir of Perpetual Smiles has overwhelmed you. Mandatory joy continues unabated."),
+                (P.innerText = "TRY AGAIN (RESTART)"));
+            }
+          }
+          pe = performance.now();
+          ((window.startGame = function () {
+            try {
+              (B(),
+                (k.style.display = "none"),
+                (M.hp = M.maxHp),
+                (M.shards = 0),
+                (M.x = 140),
+                (M.y = 320),
+                (M.vx = 0),
+                (M.vy = 0),
+                (M.invTimer = 0),
+                (M.dashTimer = 0),
+                (M.pulseTimer = 0),
+                (M.scytheTimer = 0),
+                (M.boons = {}),
+                U.forEach(function (e) {
+                  e.cleared = !1;
+                }),
+                (U[0].cleared = !0),
+                (q = 1),
+                he(0),
+                de(D));
+            } catch (e) {
+              ((C.style.display = "block"),
+                (C.innerText = "Start Error: " + e.message));
+            }
+          }),
+            requestAnimationFrame(function l(s) {
+              var d = e.min((s - pe) / 1e3, 0.05);
+              ((pe = s),
+                xe(d),
+                (function () {
+                  (f.save(),
+                    f.clearRect(0, 0, 960, 640),
+                    z > 0 && f.translate((i() - 0.5) * z, (i() - 0.5) * z),
+                    (f.fillStyle = "#0e0a1a"),
+                    f.fillRect(40, 40, 880, 560),
+                    (f.strokeStyle = "#22163d"),
+                    (f.lineWidth = 1));
+                  for (var l = 40; l < 920; l += 40)
+                    (f.beginPath(),
+                      f.moveTo(l, 40),
+                      f.lineTo(l, 600),
+                      f.stroke());
+                  for (var s = 40; s < 600; s += 40)
+                    (f.beginPath(),
+                      f.moveTo(40, s),
+                      f.lineTo(920, s),
+                      f.stroke());
+                  if (
+                    ((f.strokeStyle = "#7c3aed"),
+                    (f.lineWidth = 6),
+                    f.strokeRect(40, 40, 880, 560),
+                    G &&
+                      G.cleared &&
+                      ((f.fillStyle = "#d946ef"),
+                      f.fillRect(914, 275, 10, 90),
+                      (f.shadowColor = "#f472b6"),
+                      (f.shadowBlur = 18),
+                      (f.fillStyle = "#fff"),
+                      (f.font = "bold 12px sans-serif"),
+                      f.fillText("EXIT →", 862, 325),
+                      (f.shadowBlur = 0)),
+                    ae.forEach(function (e) {
+                      ((f.fillStyle = e.u ? "#3b1d6e" : "#9333ea"),
+                        f.beginPath(),
+                        f.arc(e.x, e.y, e.r, 0, n),
+                        f.fill(),
+                        (f.strokeStyle = "#f3e8ff"),
+                        (f.lineWidth = 3),
+                        f.stroke(),
+                        (f.fillStyle = "#fff"),
+                        (f.font = "bold 11px sans-serif"),
+                        f.fillText(
+                          e.u ? "EXHAUSTED" : "⭐ [STEP: BOON]",
+                          e.x - 52,
+                          e.y + 4,
+                        ));
+                    }),
+                    le.forEach(function (e) {
+                      (f.save(),
+                        (f.fillStyle = e.rd ? "#2d1b4e" : "#9333ea"),
+                        (f.strokeStyle = "#e9d5ff"),
+                        (f.lineWidth = 2),
+                        f.strokeRect(e.x - 20, e.y - 20, 40, 40),
+                        f.fillRect(e.x - 20, e.y - 20, 40, 40),
+                        (f.fillStyle = "#fff"),
+                        (f.font = "bold 14px sans-serif"),
+                        f.fillText("📜", e.x - 8, e.y + 6),
+                        (f.fillStyle = "#e9d5ff"),
+                        (f.font = "10px sans-serif"),
+                        f.fillText(
+                          e.rd ? "READ" : "[EDICT]",
+                          e.x - 20,
+                          e.y + 32,
+                        ),
+                        f.restore());
+                    }),
+                    re.forEach(function (e) {
+                      ((f.fillStyle = "#4ade80"),
+                        f.beginPath(),
+                        f.arc(e.x, e.y, e.r, 0, n),
+                        f.fill(),
+                        (f.shadowColor = "#86efac"),
+                        (f.shadowBlur = 10),
+                        (f.fillStyle = "#fff"),
+                        f.fillText("♥", e.x - 4, e.y + 4),
+                        (f.shadowBlur = 0));
+                    }),
+                    ie.forEach(function (t) {
+                      f.save();
+                      var a = e.min(1, t.t / t.ct);
+                      ((f.strokeStyle = t.bl ? "#fff" : "#fe0"),
+                        (f.lineWidth = t.bl ? 8 : 2),
+                        f.beginPath(),
+                        f.arc(t.x, t.y, t.r * (t.bl ? 1.1 : a), 0, n),
+                        f.stroke(),
+                        (f.fillStyle = t.bl
+                          ? "#ffffffb3"
+                          : "rgba(255,200,0," + 0.4 * a + ")"),
+                        f.beginPath(),
+                        f.arc(t.x, t.y, t.r, 0, n),
+                        f.fill(),
+                        f.restore());
+                    }),
+                    $.forEach(function (e) {
+                      (f.save(),
+                        (f.strokeStyle = "#f43f5e"),
+                        (f.lineWidth = 10 * e.a),
+                        (f.globalAlpha = e.a),
+                        (f.shadowColor = "#ff2255"),
+                        (f.shadowBlur = 24),
+                        f.beginPath(),
+                        f.arc(e.x, e.y, e.r, 0, n),
+                        f.stroke(),
+                        f.restore());
+                    }),
+                    ee.forEach(function (e) {
+                      (f.save(), (f.globalAlpha = 0.85 * e.a));
+                      for (
+                        var t = [
+                            "#ff3b30",
+                            "#ff9500",
+                            "#ffcc00",
+                            "#34c759",
+                            "#32ade6",
+                            "#af52de",
+                          ],
+                          a = e.r * (1.15 - 0.15 * e.a),
+                          l = 0;
+                        l < t.length;
+                        l++
+                      )
+                        ((f.strokeStyle = t[l]),
+                          (f.lineWidth = 6 * e.a),
+                          (f.shadowColor = t[l]),
+                          (f.shadowBlur = 12),
+                          f.beginPath(),
+                          f.arc(
+                            e.x,
+                            e.y,
+                            a - 7 * l,
+                            e.facing - 0.72,
+                            e.facing + 0.72,
+                          ),
+                          f.stroke());
+                      ((f.shadowBlur = 0), f.restore());
+                    }),
+                    Z.forEach(function (e) {
+                      (f.save(),
+                        f.translate(e.x, e.y),
+                        f.rotate(e.facing),
+                        (f.globalAlpha = 0.4 * e.a),
+                        (f.fillStyle = "#9333ea"),
+                        f.beginPath(),
+                        f.ellipse(-6, 0, 24, 15, 0, 0, n),
+                        f.fill(),
+                        f.restore());
+                    }),
+                    Q.forEach(function (e) {
+                      e.txt
+                        ? ((f.fillStyle = e.col),
+                          (f.font = "bold 13px sans-serif"),
+                          f.fillText(e.txt, e.x, e.y))
+                        : ((f.fillStyle = e.col),
+                          (f.globalAlpha = e.a),
+                          f.beginPath(),
+                          f.arc(e.x, e.y, e.r, 0, n),
+                          f.fill(),
+                          (f.globalAlpha = 1));
+                    }),
+                    J.forEach(function (e) {
+                      ((f.fillStyle = e.col),
+                        (f.shadowColor = "#f43f5e"),
+                        (f.shadowBlur = 12),
+                        f.beginPath(),
+                        f.arc(e.x, e.y, e.r, 0, n),
+                        f.fill(),
+                        (f.shadowBlur = 0));
+                    }),
+                    K.forEach(function (e) {
+                      ((f.fillStyle = e.col),
+                        (f.shadowColor = e.col),
+                        (f.shadowBlur = 8),
+                        f.beginPath(),
+                        f.arc(e.x, e.y, e.r, 0, n),
+                        f.fill(),
+                        (f.shadowBlur = 0));
+                    }),
+                    te.forEach(function (e) {
+                      if (
+                        (f.save(),
+                        f.translate(e.x, e.y),
+                        "bellringer" === e.type)
+                      )
+                        ((f.strokeStyle = "#fde047"),
+                          (f.lineWidth = 2),
+                          f.beginPath(),
+                          f.arc(0, 0, e.shieldRadius, 0, n),
+                          f.stroke(),
+                          (f.fillStyle = "rgba(253, 224, 71, 0.08)"),
+                          f.fill(),
+                          (f.fillStyle = "#fde047"),
+                          (f.shadowColor = "#eab308"),
+                          (f.shadowBlur = 15),
+                          f.beginPath(),
+                          f.arc(0, 0, e.r, 0, n),
+                          f.fill(),
+                          (f.shadowBlur = 0),
+                          (f.fillStyle = "#fff"),
+                          (f.font = "bold 14px sans-serif"),
+                          f.fillText("🔔", -7, 5));
+                      else if ("boss" === e.type) {
+                        if (
+                          ((f.fillStyle = e.col),
+                          (f.shadowColor = e.col),
+                          (f.shadowBlur = 28),
+                          f.beginPath(),
+                          f.arc(0, 0, e.r, 0, n),
+                          f.fill(),
+                          (f.shadowBlur = 0),
+                          (f.strokeStyle = "#fff"),
+                          (f.lineWidth = 3 === e.phase ? 6 : 4),
+                          f.beginPath(),
+                          f.arc(0, 0, e.r + 8, 0, n),
+                          f.stroke(),
+                          (f.fillStyle = "#fff"),
+                          f.beginPath(),
+                          f.arc(0, -6, 6, 0, n),
+                          f.fill(),
+                          e.fl)
+                        ) {
+                          var l = r(M.y - e.y, M.x - e.x) + 0.8 * a(e.la);
+                          ((f.strokeStyle = "#f05"),
+                            (f.lineWidth = 18),
+                            (f.shadowColor = "#f25"),
+                            (f.shadowBlur = 20),
+                            f.beginPath(),
+                            f.moveTo(0, 0),
+                            f.lineTo(900 * t(l), 900 * a(l)),
+                            f.stroke(),
+                            (f.shadowBlur = 0));
+                        }
+                      } else
+                        ((f.fillStyle = e.col),
+                          f.beginPath(),
+                          f.arc(0, 0, e.r, 0, n),
+                          f.fill(),
+                          e.isShielded
+                            ? ((f.strokeStyle = "#fde047"),
+                              (f.lineWidth = 3),
+                              f.stroke())
+                            : ((f.strokeStyle = "#fff"),
+                              (f.lineWidth = 2),
+                              f.stroke()));
+                      ((f.fillStyle = "#f36"),
+                        f.fillRect(
+                          -e.r,
+                          -e.r - 12,
+                          (e.hp / e.mhp) * (2 * e.r),
+                          4,
+                        ),
+                        e.grumpyTimer > 0 &&
+                          ((f.fillStyle = "#94a3b8"),
+                          (f.font = "bold 12px sans-serif"),
+                          f.fillText("🌧️", -8, -e.r - 16)),
+                        f.restore());
+                    }),
+                    1 === q || 2 === q)
+                  ) {
+                    (f.save(), f.translate(M.x, M.y));
+                    var d = f.createRadialGradient(0, 0, 10, 0, 0, 48);
+                    (d.addColorStop(0, "rgba(56, 189, 248, 0.35)"),
+                      d.addColorStop(0.5, "rgba(99, 102, 241, 0.2)"),
+                      d.addColorStop(1, "#0000"),
+                      (f.fillStyle = d),
+                      f.beginPath(),
+                      f.arc(0, 0, 48, 0, n),
+                      f.fill(),
+                      f.rotate(M.facing),
+                      M.invTimer > 0 &&
+                        Math.floor(performance.now() / 60) % 2 == 0 &&
+                        (f.globalAlpha = 0.4));
+                    var c = 3.5 * a(0.8 * M.gallop);
+                    ((f.fillStyle = "#32ade6"),
+                      (f.shadowColor = "#38bdf8"),
+                      (f.shadowBlur = 12),
+                      f.beginPath(),
+                      f.moveTo(-24, 0),
+                      f.quadraticCurveTo(-42, -10 + c, -54, -4 + c),
+                      f.quadraticCurveTo(-38, 8 + c, -24, 2),
+                      f.closePath(),
+                      f.fill(),
+                      (f.strokeStyle = "#a855f7"),
+                      (f.lineWidth = 2),
+                      f.stroke(),
+                      (f.shadowBlur = 0));
+                    for (
+                      var y = 6 * a(M.gallop),
+                        h = [
+                          [8, -17 + y],
+                          [8, 13 - y],
+                          [-16, -17 - y],
+                          [-16, 13 + y],
+                        ],
+                        u = 0;
+                      u < 4;
+                      u++
+                    ) {
+                      var p = h[u][0],
+                        x = h[u][1];
+                      ((f.strokeStyle = "#1e293b"),
+                        (f.lineWidth = 2.5),
+                        f.beginPath(),
+                        f.moveTo(0.6 * p, 0.5 * x),
+                        f.lineTo(p, x),
+                        f.stroke(),
+                        (f.fillStyle = "#38bdf8"),
+                        (f.shadowColor = "#38bdf8"),
+                        (f.shadowBlur = 10),
+                        f.beginPath(),
+                        f.arc(p, x, 3.5, 0, n),
+                        f.fill(),
+                        (f.shadowBlur = 0));
+                    }
+                    ((f.fillStyle = "#10142a"),
+                      (f.strokeStyle = "#3b82f6"),
+                      (f.lineWidth = 2.5),
+                      f.beginPath(),
+                      f.ellipse(-6, 0, 26, 14, 0, 0, n),
+                      f.fill(),
+                      f.stroke(),
+                      (f.strokeStyle = "rgba(56, 189, 248, 0.45)"),
+                      (f.lineWidth = 1.5));
+                    for (var m = -16; m <= 6; m += 7)
+                      (f.beginPath(),
+                        f.arc(m, 0, 10, -o / 2, o / 2),
+                        f.stroke());
+                    ((f.fillStyle = "#18203c"),
+                      (f.strokeStyle = "#60a5fa"),
+                      (f.lineWidth = 2),
+                      f.beginPath(),
+                      f.moveTo(6, -10),
+                      f.lineTo(26, -6),
+                      f.lineTo(32, 0),
+                      f.lineTo(26, 6),
+                      f.lineTo(6, 10),
+                      f.closePath(),
+                      f.fill(),
+                      f.stroke(),
+                      (f.fillStyle = "#38bdf8"),
+                      f.fillRect(28, -2, 2, 1.5),
+                      f.fillRect(28, 1, 2, 1.5),
+                      (f.fillStyle = "#1e294b"),
+                      (f.strokeStyle = "#93c5fd"),
+                      (f.lineWidth = 1.5),
+                      f.beginPath(),
+                      f.moveTo(10, -10),
+                      f.lineTo(16, -19),
+                      f.lineTo(18, -9),
+                      f.closePath(),
+                      f.fill(),
+                      f.stroke(),
+                      f.beginPath(),
+                      f.moveTo(10, 10),
+                      f.lineTo(16, 19),
+                      f.lineTo(18, 9),
+                      f.closePath(),
+                      f.fill(),
+                      f.stroke(),
+                      (f.fillStyle = "#32ade6"),
+                      (f.shadowColor = "#6366f1"),
+                      (f.shadowBlur = 10),
+                      f.beginPath(),
+                      f.moveTo(-14, -6),
+                      f.lineTo(-8, -15),
+                      f.lineTo(-2, -7),
+                      f.lineTo(6, -16),
+                      f.lineTo(12, -7),
+                      f.lineTo(8, 0),
+                      f.closePath(),
+                      f.fill(),
+                      (f.strokeStyle = "#a855f7"),
+                      (f.lineWidth = 1.5),
+                      f.stroke(),
+                      (f.shadowBlur = 0),
+                      f.save(),
+                      (f.strokeStyle = "#e0f2fe"),
+                      (f.shadowColor = "#38bdf8"),
+                      (f.shadowBlur = 16),
+                      (f.lineWidth = 4),
+                      f.beginPath(),
+                      f.arc(24, -14, 18, 0.85 * -o, 0.15),
+                      f.stroke(),
+                      (f.fillStyle = "#38bdf8"),
+                      f.beginPath(),
+                      f.moveTo(18, -4),
+                      f.lineTo(38, -14),
+                      f.lineTo(22, 4),
+                      f.closePath(),
+                      f.fill(),
+                      (f.shadowBlur = 0),
+                      f.restore(),
+                      (f.fillStyle = "#38bdf8"),
+                      (f.shadowColor = "#00f0ff"),
+                      (f.shadowBlur = 10),
+                      f.beginPath(),
+                      f.ellipse(20, -5, 4, 2, 0.25, 0, n),
+                      f.fill(),
+                      f.beginPath(),
+                      f.ellipse(20, 5, 4, 2, -0.25, 0, n),
+                      f.fill(),
+                      (f.fillStyle = "#fff"),
+                      f.fillRect(20, -5, 1.5, 1.5),
+                      f.fillRect(20, 4, 1.5, 1.5),
+                      (f.shadowBlur = 0),
+                      f.restore());
+                  }
+                  var v = f.createRadialGradient(M.x, M.y, 140, M.x, M.y, 480);
+                  (v.addColorStop(0, "#0000"),
+                    v.addColorStop(1, "#06040cb8"),
+                    (f.fillStyle = v),
+                    f.fillRect(0, 0, 960, 640),
+                    f.restore());
+                })(),
+                requestAnimationFrame(l));
+            }));
+        })());
     </script>
   </body>
 </html>
