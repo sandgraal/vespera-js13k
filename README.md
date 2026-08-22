@@ -6,7 +6,7 @@
 🎮 **[Play Live on GitHub Pages](https://sandgraal.github.io/vespera-js13k/)**
 
 ## Premise
-The *Grand Concordat of Radiant Serenity* has criminalized naps, rain, and minor melancholies. Play as **Vespera**, an obsidian unicorn with a 300-year migraine, dismantling the Solar Spire to claim 500 years of uninterrupted sleep.
+The *Grand Concordat of Radiant Serenity* has criminalized naps, rain, and minor melancholies. Play as **Vespera**, a melancholy unicorn with a 300-year migraine, dismantling the Solar Spire to claim 500 years of uninterrupted sleep.
 
 ## Controls
 - **WASD / Arrows**: Move
