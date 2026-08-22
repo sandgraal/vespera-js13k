@@ -307,6 +307,7 @@
         cursor: pointer;
         transition: all 0.2s;
         box-shadow: 0 0 15px rgba(168, 85, 247, 0.5);
+        pointer-events: auto;
       }
       .btn-primary:hover {
         background: linear-gradient(135deg, #9333ea, #6b21a8);
@@ -318,9 +319,24 @@
         color: #8b5cf6;
         text-align: center;
       }
+      #error-banner {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        background: rgba(220, 38, 38, 0.95);
+        color: #fff;
+        padding: 10px;
+        font-size: 12px;
+        font-family: monospace;
+        display: none;
+        z-index: 999;
+        text-align: center;
+      }
     </style>
   </head>
   <body>
+    <div id="error-banner"></div>
     <div id="game-container">
       <canvas id="gameCanvas" width="960" height="640"></canvas>
       <div id="ui">
@@ -359,7 +375,10 @@
             <div class="skill-name">PHASE<br />DASH</div>
           </div>
         </div>
-        <div id="dialogue-overlay">
+        <div
+          id="dialogue-overlay"
+          onclick="window.dismissDialogue && window.dismissDialogue()"
+        >
           <div id="dialogue-speaker"><span>VESPERA</span></div>
           <div id="dialogue-text">...</div>
           <div id="dialogue-prompt">[CLICK OR PRESS SPACE TO DISMISS]</div>
@@ -378,7 +397,12 @@
             Lead the misunderstood obsidian unicorn to extinguish the Solar
             Spire and claim uninterrupted peace.
           </div>
-          <button id="start-btn" class="btn-primary" type="button">
+          <button
+            id="start-btn"
+            class="btn-primary"
+            type="button"
+            onclick="window.startGame && window.startGame()"
+          >
             BEGIN THE CRUSADE FOR QUIET
           </button>
           <div class="controls-hint">
@@ -390,6 +414,15 @@
     </div>
 
     <script>
+      window.onerror = function (msg, url, line) {
+        const eb = document.getElementById("error-banner");
+        if (eb) {
+          eb.style.display = "block";
+          eb.innerText = `JS Error: ${msg} (Line ${line})`;
+        }
+        return false;
+      };
+
       (() => {
         let audioCtx = null;
         function initAudio() {
@@ -403,7 +436,7 @@
               audioCtx.resume();
             }
           } catch (e) {
-            console.warn("AudioContext error", e);
+            console.warn("Audio error", e);
           }
         }
 
@@ -636,7 +669,7 @@
           vx: 0,
           vy: 0,
           speed: 220,
-          radius: 24,
+          radius: 26,
           hp: 100,
           maxHp: 100,
           shards: 0,
@@ -744,7 +777,7 @@
           const k = e.key.toLowerCase();
           keys[k] = true;
           if (k === " " || k === "e" || k === "enter") {
-            dismissDialogue();
+            window.dismissDialogue();
           }
         });
         window.addEventListener("keyup", (e) => {
@@ -759,7 +792,7 @@
           initAudio();
           if (e.button === 0) {
             mouse.leftDown = true;
-            dismissDialogue();
+            window.dismissDialogue();
           }
           if (e.button === 2) {
             e.preventDefault();
@@ -805,9 +838,9 @@
           }
         }
 
-        function dismissDialogue() {
+        window.dismissDialogue = function () {
           const overlay = document.getElementById("dialogue-overlay");
-          if (overlay.style.display === "block") {
+          if (overlay && overlay.style.display === "block") {
             activeDialogueIdx++;
             if (activeDialogueIdx < activeDialogueScript.length) {
               const item = activeDialogueScript[activeDialogueIdx];
@@ -823,10 +856,6 @@
               }
             }
           }
-        }
-
-        document.getElementById("dialogue-overlay").onclick = () => {
-          dismissDialogue();
         };
 
         function drawMinimap() {
@@ -1048,13 +1077,32 @@
           const moving = dx !== 0 || dy !== 0;
           if (moving) {
             player.stillTimer = 0;
-            player.gallopPhase += dt * 12;
+            player.gallopPhase += dt * 14;
             const len = Math.hypot(dx, dy);
             let curSpeed = player.speed;
             if (player.boons.terminalInsomnia && player.hp < player.maxHp * 0.5)
               curSpeed *= 1.45;
             player.vx = (dx / len) * curSpeed;
             player.vy = (dy / len) * curSpeed;
+
+            if (Math.random() < 0.3) {
+              particles.push({
+                x:
+                  player.x -
+                  Math.cos(player.facingAngle) * 20 +
+                  (Math.random() - 0.5) * 10,
+                y:
+                  player.y -
+                  Math.sin(player.facingAngle) * 20 +
+                  (Math.random() - 0.5) * 10,
+                vx: (Math.random() - 0.5) * 20,
+                vy: (Math.random() - 0.5) * 20,
+                radius: Math.random() * 3 + 1.5,
+                color: "#7c3aed",
+                alpha: 0.6,
+                decay: 2.0,
+              });
+            }
           } else {
             player.stillTimer += dt;
             player.vx = 0;
@@ -1119,15 +1167,15 @@
             triggerShake(1.5);
             const speed = player.boons.ricochet ? 650 : 540;
             playerBullets.push({
-              x: player.x + Math.cos(player.facingAngle) * 30,
-              y: player.y + Math.sin(player.facingAngle) * 30,
+              x: player.x + Math.cos(player.facingAngle) * 36,
+              y: player.y + Math.sin(player.facingAngle) * 36,
               vx: Math.cos(player.facingAngle) * speed,
               vy: Math.sin(player.facingAngle) * speed,
               radius: 5,
               damage: 26,
               pierce: player.boons.piercingCynicism ? 99 : 1,
               bounces: player.boons.ricochet ? 2 : 0,
-              color: "#e879f9",
+              color: "#f43f5e",
             });
           }
 
@@ -1261,7 +1309,7 @@
             }
             if (b.y < margin || b.y > canvas.height - margin) {
               if (b.bounces > 0) {
-                b.vx *= -1;
+                b.vy *= -1;
                 b.bounces--;
               } else {
                 playerBullets.splice(i, 1);
@@ -1746,8 +1794,8 @@
 
           playerBullets.forEach((b) => {
             ctx.fillStyle = b.color;
-            ctx.shadowColor = "#e879f9";
-            ctx.shadowBlur = 10;
+            ctx.shadowColor = "#f43f5e";
+            ctx.shadowBlur = 12;
             ctx.beginPath();
             ctx.arc(b.x, b.y, b.radius, 0, Math.PI * 2);
             ctx.fill();
@@ -1817,18 +1865,19 @@
             ctx.restore();
           });
 
-          // === DRAW HIGH-VISIBILITY OBSIDIAN UNICORN (VESPERA) ===
+          // === PROCEDURAL EVIL OBSIDIAN UNICORN (VESPERA) ===
           if (currentState === STATE_PLAYING || currentState === STATE_BOON) {
             ctx.save();
             ctx.translate(player.x, player.y);
 
-            // Glowing Shadow Aura
-            const auraGrad = ctx.createRadialGradient(0, 0, 8, 0, 0, 36);
-            auraGrad.addColorStop(0, "rgba(168, 85, 247, 0.45)");
-            auraGrad.addColorStop(1, "rgba(168, 85, 247, 0)");
+            // 1. Swirling Void Shadow Aura
+            const auraGrad = ctx.createRadialGradient(0, 0, 10, 0, 0, 44);
+            auraGrad.addColorStop(0, "rgba(217, 70, 239, 0.4)");
+            auraGrad.addColorStop(0.6, "rgba(124, 58, 237, 0.25)");
+            auraGrad.addColorStop(1, "rgba(0, 0, 0, 0)");
             ctx.fillStyle = auraGrad;
             ctx.beginPath();
-            ctx.arc(0, 0, 36, 0, Math.PI * 2);
+            ctx.arc(0, 0, 44, 0, Math.PI * 2);
             ctx.fill();
 
             ctx.rotate(player.facingAngle);
@@ -1840,68 +1889,124 @@
               ctx.globalAlpha = 0.4;
             }
 
-            // Legs / Hooves with Gallop Animation
-            const legBob = Math.sin(player.gallopPhase) * 6;
-            ctx.fillStyle = "#c084fc";
-            ctx.fillRect(8, -14 + legBob, 6, 4);
-            ctx.fillRect(8, 10 - legBob, 6, 4);
-            ctx.fillRect(-16, -14 - legBob, 6, 4);
-            ctx.fillRect(-16, 10 + legBob, 6, 4);
-
-            // Tail
-            ctx.fillStyle = "#a855f7";
-            ctx.beginPath();
-            ctx.ellipse(-26, 0, 10, 5, 0, 0, Math.PI * 2);
-            ctx.fill();
-
-            // Obsidian Body with Vibrant Violet Stroke
-            ctx.fillStyle = "#1c1333";
-            ctx.strokeStyle = "#c084fc";
-            ctx.lineWidth = 3;
-            ctx.beginPath();
-            ctx.ellipse(-4, 0, 22, 14, 0, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.stroke();
-
-            // Head & Snout
-            ctx.fillStyle = "#261a45";
-            ctx.strokeStyle = "#d8b4f8";
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            ctx.ellipse(14, 0, 12, 9, 0, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.stroke();
-
-            // Mane
+            // 2. Animated Demonic Flowing Tail
+            const tailWag = Math.sin(player.gallopPhase * 0.8) * 4;
             ctx.fillStyle = "#d946ef";
             ctx.beginPath();
-            ctx.ellipse(-6, -6, 12, 6, -0.4, 0, Math.PI * 2);
+            ctx.moveTo(-22, 0);
+            ctx.quadraticCurveTo(-34, -8 + tailWag, -42, -4 + tailWag);
+            ctx.quadraticCurveTo(-32, 6 + tailWag, -22, 2);
+            ctx.closePath();
             ctx.fill();
-            ctx.beginPath();
-            ctx.ellipse(4, -6, 8, 5, -0.2, 0, Math.PI * 2);
-            ctx.fill();
+            ctx.strokeStyle = "#f43f5e";
+            ctx.lineWidth = 1.5;
+            ctx.stroke();
 
-            // Glowing Amethyst Horn
+            // 3. Four Dark Steel Hooves with Gallop Physics
+            const legBob = Math.sin(player.gallopPhase) * 7;
+            ctx.fillStyle = "#1e163b";
+            ctx.strokeStyle = "#e879f9";
+            ctx.lineWidth = 2;
+            ctx.fillRect(6, -16 + legBob, 8, 5);
+            ctx.strokeRect(6, -16 + legBob, 8, 5);
+            ctx.fillRect(6, 11 - legBob, 8, 5);
+            ctx.strokeRect(6, 11 - legBob, 8, 5);
+            ctx.fillRect(-18, -16 - legBob, 8, 5);
+            ctx.strokeRect(-18, -16 - legBob, 8, 5);
+            ctx.fillRect(-18, 11 + legBob, 8, 5);
+            ctx.strokeRect(-18, 11 + legBob, 8, 5);
+
+            // 4. Muscular Equine Torso & Flanks
+            ctx.fillStyle = "#130d24";
+            ctx.strokeStyle = "#c084fc";
+            ctx.lineWidth = 2.5;
+            ctx.beginPath();
+            ctx.ellipse(-6, 0, 24, 15, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+
+            // 5. Arched Equine Neck & Snout
+            ctx.fillStyle = "#1e1338";
+            ctx.beginPath();
+            ctx.moveTo(4, -10);
+            ctx.lineTo(24, -6);
+            ctx.lineTo(28, 0);
+            ctx.lineTo(24, 6);
+            ctx.lineTo(4, 10);
+            ctx.closePath();
+            ctx.fill();
+            ctx.strokeStyle = "#d8b4f8";
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            // Nostrils (Sinister Embers)
+            ctx.fillStyle = "#f43f5e";
+            ctx.fillRect(25, -2, 2, 1.5);
+            ctx.fillRect(25, 1, 2, 1.5);
+
+            // 6. Pointed Sharp Equine Ears
+            ctx.fillStyle = "#2d1b54";
+            ctx.strokeStyle = "#f472b6";
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.moveTo(8, -10);
+            ctx.lineTo(14, -18);
+            ctx.lineTo(16, -9);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(8, 10);
+            ctx.lineTo(14, 18);
+            ctx.lineTo(16, 9);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+
+            // 7. Spiky Jagged Purple Mane
+            ctx.fillStyle = "#9333ea";
+            ctx.beginPath();
+            ctx.moveTo(-12, -7);
+            ctx.lineTo(-8, -14);
+            ctx.lineTo(-2, -8);
+            ctx.lineTo(4, -15);
+            ctx.lineTo(10, -8);
+            ctx.lineTo(6, 0);
+            ctx.closePath();
+            ctx.fill();
+            ctx.strokeStyle = "#f43f5e";
+            ctx.lineWidth = 1.5;
+            ctx.stroke();
+
+            // 8. CRACKLING OBSIDIAN HORN
             ctx.fillStyle = "#ffffff";
-            ctx.shadowColor = "#f472b6";
-            ctx.shadowBlur = 15;
+            ctx.shadowColor = "#f43f5e";
+            ctx.shadowBlur = 18;
             ctx.beginPath();
             ctx.moveTo(18, -4);
-            ctx.lineTo(36, 0);
+            ctx.lineTo(42, 0);
             ctx.lineTo(18, 4);
             ctx.closePath();
             ctx.fill();
             ctx.shadowBlur = 0;
             ctx.strokeStyle = "#d946ef";
             ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(24, -3);
+            ctx.lineTo(26, 3);
+            ctx.moveTo(32, -2);
+            ctx.lineTo(34, 2);
             ctx.stroke();
 
-            // Amethyst Eye
-            ctx.fillStyle = "#f0abfc";
-            ctx.shadowColor = "#d946ef";
-            ctx.shadowBlur = 8;
+            // 9. Sinister Demonic Glowing Slit Eyes
+            ctx.fillStyle = "#f43f5e";
+            ctx.shadowColor = "#ff2255";
+            ctx.shadowBlur = 10;
             ctx.beginPath();
-            ctx.arc(16, -4, 3, 0, Math.PI * 2);
+            ctx.ellipse(18, -5, 3.5, 1.5, 0.3, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.ellipse(18, 5, 3.5, 1.5, -0.3, 0, Math.PI * 2);
             ctx.fill();
             ctx.shadowBlur = 0;
 
@@ -1933,22 +2038,26 @@
           requestAnimationFrame(gameLoop);
         }
 
-        function startGame() {
-          initAudio();
-          document.getElementById("screen-overlay").style.display = "none";
-          resetPlayer();
-          ROOM_LAYOUT.forEach((r) => (r.cleared = false));
-          ROOM_LAYOUT[0].cleared = true;
-          currentState = STATE_PLAYING;
-          loadRoom(0);
-          showDialogue(SCRIPT_INTRO);
-        }
-
-        const startBtn = document.getElementById("start-btn");
-        if (startBtn) {
-          startBtn.addEventListener("click", startGame);
-          startBtn.addEventListener("touchstart", startGame);
-        }
+        window.startGame = function () {
+          try {
+            initAudio();
+            const overlay = document.getElementById("screen-overlay");
+            if (overlay) overlay.style.display = "none";
+            resetPlayer();
+            ROOM_LAYOUT.forEach((r) => (r.cleared = false));
+            ROOM_LAYOUT[0].cleared = true;
+            currentState = STATE_PLAYING;
+            loadRoom(0);
+            showDialogue(SCRIPT_INTRO);
+          } catch (err) {
+            console.error(err);
+            const eb = document.getElementById("error-banner");
+            if (eb) {
+              eb.style.display = "block";
+              eb.innerText = `Start Error: ${err.message}`;
+            }
+          }
+        };
 
         requestAnimationFrame(gameLoop);
       })();
