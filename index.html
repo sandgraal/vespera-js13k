@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>Vespera: The Somber v1.2</title>
+    <title>Vespera: The Somber</title>
     <style>
       * {
         box-sizing: border-box;
@@ -150,7 +150,7 @@
         width: 100%;
         height: 14px;
         background: #1a0826;
-        border: 2px solid #ffcc00;
+        border: 2px solid #fc0;
         border-radius: 3px;
         overflow: hidden;
         margin-top: 4px;
@@ -158,7 +158,7 @@
       #boss-bar-fill {
         height: 100%;
         width: 100%;
-        background: linear-gradient(90deg, #ff9900, #ffea00);
+        background: linear-gradient(90deg, #f90, #fea);
         transition: width 0.1s;
       }
       #boss-name {
@@ -419,7 +419,6 @@
         </div>
       </div>
     </div>
-
     <script>
       window.onerror = function (m, u, l) {
         var b = document.getElementById("error-banner");
@@ -458,7 +457,8 @@
         var boonOverlay = document.getElementById("boon-overlay"),
           boonCards = document.getElementById("boon-cards");
         var screenOverlay = document.getElementById("screen-overlay"),
-          startBtn = document.getElementById("start-btn");
+          startBtn = document.getElementById("start-btn"),
+          errorBanner = document.getElementById("error-banner");
 
         var audioCtx = null;
         function initAudio() {
