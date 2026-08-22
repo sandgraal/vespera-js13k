@@ -414,38 +414,39 @@
     </div>
 
     <script>
-      window.onerror = function (msg, url, line) {
-        const eb = document.getElementById("error-banner");
-        if (eb) {
-          eb.style.display = "block";
-          eb.innerText = `JS Error: ${msg} (Line ${line})`;
+      window.onerror = (m, u, l) => {
+        const b = document.getElementById("error-banner");
+        if (b) {
+          b.style.display = "block";
+          b.innerText = `Error: ${m} (${l})`;
         }
-        return false;
       };
-
       (() => {
+        const M = Math,
+          C = M.cos,
+          S = M.sin,
+          H = M.hypot,
+          A = M.atan2,
+          R = M.random,
+          PI = M.PI,
+          TAU = PI * 2,
+          $ = (id) => document.getElementById(id);
         let audioCtx = null;
-        function initAudio() {
+        const initAudio = () => {
           try {
             if (!audioCtx) {
-              const AudioContextClass =
-                window.AudioContext || window.webkitAudioContext;
-              if (AudioContextClass) audioCtx = new AudioContextClass();
+              const AC = window.AudioContext || window.webkitAudioContext;
+              if (AC) audioCtx = new AC();
             }
-            if (audioCtx && audioCtx.state === "suspended") {
-              audioCtx.resume();
-            }
-          } catch (e) {
-            console.warn("Audio error", e);
-          }
-        }
-
-        function playSound(type) {
+            if (audioCtx && audioCtx.state === "suspended") audioCtx.resume();
+          } catch (e) {}
+        };
+        const playSound = (type) => {
           if (!audioCtx) return;
           try {
-            const now = audioCtx.currentTime;
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
+            const now = audioCtx.currentTime,
+              osc = audioCtx.createOscillator(),
+              gain = audioCtx.createGain();
             osc.connect(gain);
             gain.connect(audioCtx.destination);
             if (type === "shoot") {
@@ -489,9 +490,9 @@
               osc.start(now);
               osc.stop(now + 0.2);
             } else if (type === "boon") {
-              [329.63, 440, 523.25, 659.25].forEach((f, i) => {
-                const o = audioCtx.createOscillator();
-                const g = audioCtx.createGain();
+              [330, 440, 523, 659].forEach((f, i) => {
+                const o = audioCtx.createOscillator(),
+                  g = audioCtx.createGain();
                 o.type = "sine";
                 o.frequency.setValueAtTime(f, now + i * 0.08);
                 g.gain.setValueAtTime(0.18, now + i * 0.08);
@@ -527,25 +528,24 @@
               osc.stop(now + 0.4);
             }
           } catch (e) {}
-        }
-
+        };
         let musicTimer = 0;
-        function updateMusic(dt, isBoss, bossPhase = 1) {
+        const updateMusic = (dt, isBoss, bossPhase = 1) => {
           if (!audioCtx) return;
           musicTimer += dt;
           const interval = isBoss ? (bossPhase === 3 ? 0.9 : 1.4) : 3.2;
           if (musicTimer > interval) {
             musicTimer = 0;
             try {
-              const now = audioCtx.currentTime;
-              const notes = isBoss
-                ? bossPhase === 3
-                  ? [146.8, 174.6, 196.0, 220.0]
-                  : [110, 130.8, 146.8, 164.8]
-                : [73.4, 87.3, 98.0, 110.0];
-              const f = notes[Math.floor(Math.random() * notes.length)];
-              const o = audioCtx.createOscillator();
-              const g = audioCtx.createGain();
+              const now = audioCtx.currentTime,
+                notes = isBoss
+                  ? bossPhase === 3
+                    ? [147, 175, 196, 220]
+                    : [110, 131, 147, 165]
+                  : [73, 87, 98, 110],
+                f = notes[Math.floor(R() * notes.length)],
+                o = audioCtx.createOscillator(),
+                g = audioCtx.createGain();
               o.type = bossPhase === 3 ? "sawtooth" : "triangle";
               o.frequency.setValueAtTime(f, now);
               g.gain.setValueAtTime(0.045, now);
@@ -556,232 +556,187 @@
               o.stop(now + interval * 0.95);
             } catch (e) {}
           }
-        }
-
+        };
         const SCRIPT_INTRO = [
-          {
-            speaker: "VESPERA THE SOMBER",
-            text: "Year 342 of the Mandatory Sunshine. I asked for earplugs; they declared me an apocalyptic threat. Time to extinguish the Solar Spire.",
-          },
-        ];
-        const SCRIPT_BOSS_INTRO = [
-          {
-            speaker: "ARCH-PRECEPTOR VALERIUS",
-            text: "HALT, VOID-BRINGER! Suffer the searing majesty of Unbroken Joy!",
-          },
-          {
-            speaker: "VESPERA THE SOMBER",
-            text: "I am begging you to turn the chandelier down to 50%.",
-          },
-        ];
-        const SCRIPT_VICTORY = [
-          {
-            speaker: "VESPERA THE SOMBER",
-            text: "The Solar Core is offline. The world plunges into peaceful twilight. Finally... 500 years of sleep.",
-          },
-        ];
-        const LORE_TABLETS = [
-          {
-            title: "Concordat Edict #402",
-            edict:
+            [
+              "VESPERA",
+              "Year 342 of Mandatory Sunshine. I asked for earplugs; they declared me an apocalyptic threat. Time to extinguish the Solar Spire.",
+            ],
+          ],
+          SCRIPT_BOSS = [
+            [
+              "ARCH-PRECEPTOR VALERIUS",
+              "HALT, VOID-BRINGER! Suffer the searing majesty of Unbroken Joy!",
+            ],
+            ["VESPERA", "I am begging you to turn the chandelier down to 50%."],
+          ],
+          SCRIPT_WIN = [
+            [
+              "VESPERA",
+              "The Solar Core is offline. The world plunges into peaceful twilight. Finally... 500 years of sleep.",
+            ],
+          ],
+          LORE_TABLETS = [
+            [
+              "EDICT #402",
               "Sighing above 40dB is classified as high treason against Joy.",
-            reaction: "My resting breath is 42dB. I was condemned at birth.",
-          },
-          {
-            title: "Concordat Edict #719",
-            edict:
-              "All blackout curtains have been confiscated for the Glory of the Solar Choir.",
-            reaction:
+              "My resting breath is 42dB. I was condemned at birth.",
+            ],
+            [
+              "EDICT #719",
+              "All blackout curtains have been confiscated for the Solar Choir.",
               "I draped a wet burlap sack over my head. They arrested the sack.",
+            ],
+            [
+              "EDICT #88",
+              "Gothic architecture and somber cello pieces are acoustic terrorism.",
+              "I just wanted to play minor pentatonic scales in peace.",
+            ],
+          ],
+          BOONS = [
+            [
+              "ricochet",
+              "Nihilistic Ricochet",
+              "Umbral Lances bounce off walls 2x with +25% speed.",
+              '"The void refuses to respect arbitrary drywall."',
+            ],
+            [
+              "metalHooves",
+              "Heavy Metal Hooves",
+              "Phase Dash leaves a cursed flame wake that burns pursuers.",
+              '"They complained about hoof clatter. Now they get brimstone."',
+            ],
+            [
+              "terminalInsomnia",
+              "Terminal Insomnia",
+              "Below 50% HP, fire rate & move speed increase by +45%.",
+              '"The fourth stage of sleep deprivation is weaponized focus."',
+            ],
+            [
+              "weaponizedApathy",
+              "Weaponized Apathy",
+              "Standing still for 0.4s emits an aura slowing bullets by 60%.",
+              '"Refusing to participate is a potent tactical doctrine."',
+            ],
+            [
+              "eclipseSingularity",
+              "Eclipse Singularity",
+              "Pulse cooldown reduced by 40% and sucks foes into the void.",
+              '"A localized collapse of compulsory cheer."',
+            ],
+            [
+              "darkCatharsis",
+              "Dark Catharsis",
+              "Slain zealots have 35% chance to drop healing Somber Tears.",
+              '"Schadenfreude is surprisingly medicinal."',
+            ],
+            [
+              "piercingCynicism",
+              "Piercing Cynicism",
+              "Umbral Lances pierce infinitely through all enemies.",
+              '"Sharp truths slice clean through toxic positivity."',
+            ],
+          ],
+          player = {
+            x: 480,
+            y: 320,
+            vx: 0,
+            vy: 0,
+            speed: 220,
+            radius: 26,
+            hp: 100,
+            maxHp: 100,
+            shards: 0,
+            facingAngle: 0,
+            gallopPhase: 0,
+            fireTimer: 0,
+            fireRate: 0.13,
+            pulseTimer: 0,
+            pulseCooldown: 2.2,
+            dashTimer: 0,
+            dashCooldown: 1,
+            isDashing: !1,
+            dashDuration: 0.22,
+            dashTimeRemaining: 0,
+            invincibleTimer: 0,
+            stillTimer: 0,
+            boons: {},
           },
-          {
-            title: "Concordat Edict #88",
-            edict:
-              "Gothic architecture and somber cello compositions are designated acoustic terrorism.",
-            reaction: "I just wanted to play minor pentatonic scales in peace.",
+          resetPlayer = () => {
+            player.hp = player.maxHp;
+            player.shards = 0;
+            player.x = 140;
+            player.y = 320;
+            player.vx = 0;
+            player.vy = 0;
+            player.invincibleTimer = 0;
+            player.dashTimer = 0;
+            player.pulseTimer = 0;
+            player.boons = {};
           },
-        ];
-        const BOON_QUIPS = {
-          ricochet:
-            '"If physics won\'t cooperate, at least the drywall has given up."',
-          metalHooves:
-            '"They complained about hoof clatter. Now they can enjoy burning sulfur."',
-          terminalInsomnia:
-            '"The fourth stage of sleep deprivation is weaponized clarity."',
-          weaponizedApathy:
-            '"Doing absolutely nothing has always been my greatest tactical strength."',
-          eclipseSingularity:
-            '"A localized gravitational collapse of enforced joy. Beautiful."',
-          darkCatharsis:
-            '"Their disappointment is surprisingly rich in electrolytes."',
-          piercingCynicism:
-            '"A sharp truth cuts clean through six layers of toxic positivity."',
-        };
-        const ALL_BOONS = [
-          {
-            id: "ricochet",
-            title: "Nihilistic Ricochet",
-            desc: "Umbral Lances bounce off walls up to 2 times with +25% bonus velocity.",
-            flavor: '"The void refuses to respect arbitrary drywall."',
-          },
-          {
-            id: "metalHooves",
-            title: "Heavy Metal Hooves",
-            desc: "Phase Dash leaves a cursed black flame wake that heavily damages pursuers.",
-            flavor:
-              '"They complained about the noise. Now they complain about the brimstone."',
-          },
-          {
-            id: "terminalInsomnia",
-            title: "Terminal Insomnia",
-            desc: "When HP drops below 50%, fire rate and movement speed increase by +45%.",
-            flavor: '"Delirium provides remarkable focus."',
-          },
-          {
-            id: "weaponizedApathy",
-            title: "Weaponized Apathy",
-            desc: "Standing still for 0.4s emits an aura of silence that slows enemy bullets by 60%.",
-            flavor: '"Refusing to participate is a potent tactical doctrine."',
-          },
-          {
-            id: "eclipseSingularity",
-            title: "Eclipse Singularity",
-            desc: "Eclipse Pulse cooldown reduced by 40% and sucks nearby foes into the void.",
-            flavor: '"A localized collapse of compulsory cheer."',
-          },
-          {
-            id: "darkCatharsis",
-            title: "Dark Catharsis",
-            desc: "Slain zealots have a 35% chance to drop Somber Tears that heal 15 HP.",
-            flavor: '"Schadenfreude is surprisingly medicinal."',
-          },
-          {
-            id: "piercingCynicism",
-            title: "Piercing Cynicism",
-            desc: "Umbral Lances pierce through all enemies without stopping.",
-            flavor: '"Sharp truths slice clean through toxic positivity."',
-          },
-        ];
-
-        const player = {
-          x: 480,
-          y: 320,
-          vx: 0,
-          vy: 0,
-          speed: 220,
-          radius: 26,
-          hp: 100,
-          maxHp: 100,
-          shards: 0,
-          facingAngle: 0,
-          gallopPhase: 0,
-          fireTimer: 0,
-          fireRate: 0.13,
-          pulseTimer: 0,
-          pulseCooldown: 2.2,
-          dashTimer: 0,
-          dashCooldown: 1.0,
-          isDashing: false,
-          dashDuration: 0.22,
-          dashTimeRemaining: 0,
-          invincibleTimer: 0,
-          stillTimer: 0,
-          boons: {
-            ricochet: false,
-            metalHooves: false,
-            terminalInsomnia: false,
-            weaponizedApathy: false,
-            eclipseSingularity: false,
-            darkCatharsis: false,
-            piercingCynicism: false,
-          },
-        };
-        function resetPlayer() {
-          player.hp = player.maxHp;
-          player.shards = 0;
-          player.x = 140;
-          player.y = 320;
-          player.vx = 0;
-          player.vy = 0;
-          player.invincibleTimer = 0;
-          player.dashTimer = 0;
-          player.pulseTimer = 0;
-          for (let k in player.boons) player.boons[k] = false;
-        }
-
-        const ROOM_LAYOUT = [
-          {
-            id: 0,
-            name: "1-1: Sanctuary of Gloom",
-            type: "start",
-            cleared: true,
-            tabletId: 0,
-          },
-          {
-            id: 1,
-            name: "1-2: The Meadows of Forced Cheer",
-            type: "combat",
-            cleared: false,
-            waves: 2,
-          },
-          {
-            id: 2,
-            name: "1-3: Cloister of the Cynic",
-            type: "altar",
-            cleared: false,
-            tabletId: 1,
-          },
-          {
-            id: 3,
-            name: "1-4: The Hall of Mandatory Smiles",
-            type: "combat",
-            cleared: false,
-            waves: 3,
-          },
-          {
-            id: 4,
-            name: "1-5: The Somber Vestry",
-            type: "altar",
-            cleared: false,
-            tabletId: 2,
-          },
-          {
-            id: 5,
-            name: "1-6: The Solar Spire Pinnacle",
-            type: "boss",
-            cleared: false,
-            waves: 1,
-          },
-        ];
-
-        const canvas = document.getElementById("gameCanvas");
-        const ctx = canvas.getContext("2d");
-        const miniCanvas = document.getElementById("minimap");
-        const miniCtx = miniCanvas.getContext("2d");
-
-        const STATE_TITLE = 0,
-          STATE_PLAYING = 1,
-          STATE_BOON = 2,
-          STATE_GAMEOVER = 3,
-          STATE_VICTORY = 4;
-        let currentState = STATE_TITLE;
-        const keys = {};
-        const mouse = {
-          x: canvas.width / 2,
-          y: canvas.height / 2,
-          leftDown: false,
-          rightDown: false,
-        };
-
+          ROOM_LAYOUT = [
+            {
+              id: 0,
+              name: "1-1: Sanctuary of Gloom",
+              type: "start",
+              cleared: !0,
+              tabletId: 0,
+            },
+            {
+              id: 1,
+              name: "1-2: Meadows of Forced Cheer",
+              type: "combat",
+              cleared: !1,
+              waves: 2,
+            },
+            {
+              id: 2,
+              name: "1-3: Cloister of the Cynic",
+              type: "altar",
+              cleared: !1,
+              tabletId: 1,
+            },
+            {
+              id: 3,
+              name: "1-4: Hall of Mandatory Smiles",
+              type: "combat",
+              cleared: !1,
+              waves: 3,
+            },
+            {
+              id: 4,
+              name: "1-5: The Somber Vestry",
+              type: "altar",
+              cleared: !1,
+              tabletId: 2,
+            },
+            {
+              id: 5,
+              name: "1-6: Solar Spire Pinnacle",
+              type: "boss",
+              cleared: !1,
+              waves: 1,
+            },
+          ],
+          canvas = $("gameCanvas"),
+          ctx = canvas.getContext("2d"),
+          miniCanvas = $("minimap"),
+          miniCtx = miniCanvas.getContext("2d");
+        let currentState = 0;
+        const keys = {},
+          mouse = {
+            x: canvas.width / 2,
+            y: canvas.height / 2,
+            leftDown: !1,
+            rightDown: !1,
+          };
         window.addEventListener("keydown", (e) => {
           const k = e.key.toLowerCase();
-          keys[k] = true;
-          if (k === " " || k === "e" || k === "enter") {
-            window.dismissDialogue();
-          }
+          keys[k] = !0;
+          if (k === " " || k === "e" || k === "enter") window.dismissDialogue();
         });
         window.addEventListener("keyup", (e) => {
-          keys[e.key.toLowerCase()] = false;
+          keys[e.key.toLowerCase()] = !1;
         });
         canvas.addEventListener("mousemove", (e) => {
           const rect = canvas.getBoundingClientRect();
@@ -791,25 +746,23 @@
         canvas.addEventListener("mousedown", (e) => {
           initAudio();
           if (e.button === 0) {
-            mouse.leftDown = true;
+            mouse.leftDown = !0;
             window.dismissDialogue();
           }
           if (e.button === 2) {
             e.preventDefault();
-            mouse.rightDown = true;
+            mouse.rightDown = !0;
           }
         });
         canvas.addEventListener("mouseup", (e) => {
-          if (e.button === 0) mouse.leftDown = false;
-          if (e.button === 2) mouse.rightDown = false;
+          if (e.button === 0) mouse.leftDown = !1;
+          if (e.button === 2) mouse.rightDown = !1;
         });
         canvas.addEventListener("contextmenu", (e) => e.preventDefault());
-
         let shakeIntensity = 0;
-        function triggerShake(amt) {
-          shakeIntensity = Math.min(shakeIntensity + amt, 16);
-        }
-
+        const triggerShake = (amt) => {
+          shakeIntensity = M.min(shakeIntensity + amt, 16);
+        };
         let playerBullets = [],
           enemyBullets = [],
           particles = [],
@@ -817,36 +770,32 @@
           altars = [],
           tablets = [],
           drops = [],
-          sunStrikes = [];
-        let currentRoom = null,
+          sunStrikes = [],
+          currentRoom = null,
           currentRoomIndex = 0,
-          boss = null;
-        let activeDialogueScript = [],
+          boss = null,
+          activeDialogueScript = [],
           activeDialogueIdx = 0,
           dialogueCallback = null;
-
-        function showDialogue(script, onComplete) {
+        const showDialogue = (script, onComplete) => {
           activeDialogueScript = script;
           activeDialogueIdx = 0;
           dialogueCallback = onComplete;
           const item = script[0];
           if (item) {
-            document.getElementById("dialogue-speaker").innerText =
-              item.speaker;
-            document.getElementById("dialogue-text").innerText = item.text;
-            document.getElementById("dialogue-overlay").style.display = "block";
+            $("dialogue-speaker").innerText = item[0];
+            $("dialogue-text").innerText = item;
+            $("dialogue-overlay").style.display = "block";
           }
-        }
-
-        window.dismissDialogue = function () {
-          const overlay = document.getElementById("dialogue-overlay");
+        };
+        window.dismissDialogue = () => {
+          const overlay = $("dialogue-overlay");
           if (overlay && overlay.style.display === "block") {
             activeDialogueIdx++;
             if (activeDialogueIdx < activeDialogueScript.length) {
               const item = activeDialogueScript[activeDialogueIdx];
-              document.getElementById("dialogue-speaker").innerText =
-                item.speaker;
-              document.getElementById("dialogue-text").innerText = item.text;
+              $("dialogue-speaker").innerText = item[0];
+              $("dialogue-text").innerText = item;
             } else {
               overlay.style.display = "none";
               if (dialogueCallback) {
@@ -857,77 +806,70 @@
             }
           }
         };
-
-        function drawMinimap() {
-          miniCtx.clearRect(0, 0, 110, 110);
-          const roomW = 14,
-            roomH = 14,
-            gap = 4;
-          ROOM_LAYOUT.forEach((r, i) => {
-            const rx = 10 + (i % 3) * (roomW + gap * 3);
-            const ry = 25 + Math.floor(i / 3) * (roomH + gap * 3);
-            miniCtx.fillStyle =
-              i === currentRoomIndex
-                ? "#e9d5ff"
-                : r.cleared
-                  ? "#9333ea"
-                  : "#3b1d6e";
-            miniCtx.fillRect(rx, ry, roomW, roomH);
-            if (r.type === "boss") {
-              miniCtx.fillStyle = "#ffcc00";
-              miniCtx.fillText("★", rx + 2, ry + 11);
-            }
-          });
-        }
-
-        function createEnemy(type, x, y) {
-          if (type === "cherub")
-            return {
-              type,
-              x,
-              y,
-              radius: 16,
-              hp: 45,
-              maxHp: 45,
-              speed: 85,
-              attackTimer: Math.random() * 1.5,
-              attackRate: 2.2,
-              color: "#ffdd55",
-              name: "Seraphic Cherub",
-            };
-          else if (type === "flagellant")
-            return {
-              type,
-              x,
-              y,
-              radius: 18,
-              hp: 65,
-              maxHp: 65,
-              speed: 145,
-              attackTimer: 0,
-              attackRate: 1.5,
-              color: "#ff7733",
-              name: "Zealot Flagellant",
-            };
-          else if (type === "turret")
-            return {
-              type,
-              x,
-              y,
-              radius: 22,
-              hp: 90,
-              maxHp: 90,
-              speed: 0,
-              attackTimer: 0,
-              attackRate: 2.8,
-              angle: 0,
-              color: "#ffcc00",
-              name: "Prism Sentry",
-            };
-        }
-
-        function createBoss() {
-          return {
+        const drawMinimap = () => {
+            miniCtx.clearRect(0, 0, 110, 110);
+            const roomW = 14,
+              roomH = 14,
+              gap = 4;
+            ROOM_LAYOUT.forEach((r, i) => {
+              const rx = 10 + (i % 3) * (roomW + gap * 3),
+                ry = 25 + Math.floor(i / 3) * (roomH + gap * 3);
+              miniCtx.fillStyle =
+                i === currentRoomIndex
+                  ? "#e9d5ff"
+                  : r.cleared
+                    ? "#9333ea"
+                    : "#3b1d6e";
+              miniCtx.fillRect(rx, ry, roomW, roomH);
+              if (r.type === "boss") {
+                miniCtx.fillStyle = "#ffcc00";
+                miniCtx.fillText("★", rx + 2, ry + 11);
+              }
+            });
+          },
+          createEnemy = (type, x, y) => {
+            if (type === "cherub")
+              return {
+                type,
+                x,
+                y,
+                radius: 16,
+                hp: 45,
+                maxHp: 45,
+                speed: 85,
+                attackTimer: R() * 1.5,
+                attackRate: 2.2,
+                color: "#ffdd55",
+              };
+            if (type === "flagellant")
+              return {
+                type,
+                x,
+                y,
+                radius: 18,
+                hp: 65,
+                maxHp: 65,
+                speed: 145,
+                attackTimer: 0,
+                attackRate: 1.5,
+                color: "#ff7733",
+              };
+            if (type === "turret")
+              return {
+                type,
+                x,
+                y,
+                radius: 22,
+                hp: 90,
+                maxHp: 90,
+                speed: 0,
+                attackTimer: 0,
+                attackRate: 2.8,
+                angle: 0,
+                color: "#ffcc00",
+              };
+          },
+          createBoss = () => ({
             type: "boss",
             x: canvas.width - 180,
             y: canvas.height / 2,
@@ -940,167 +882,141 @@
             phase: 1,
             spinAngle: 0,
             laserTimer: 0,
-            isFiringLaser: false,
+            isFiringLaser: !1,
             laserAngle: 0,
             color: "#ffd700",
-            name: "Arch-Preceptor Valerius",
-          };
-        }
-
-        function loadRoom(index) {
-          currentRoomIndex = index;
-          currentRoom = ROOM_LAYOUT[index];
-          document.getElementById("room-text").innerText = index + 1 + "/6";
-          playerBullets = [];
-          enemyBullets = [];
-          enemies = [];
-          altars = [];
-          tablets = [];
-          drops = [];
-          sunStrikes = [];
-          player.x = 140;
-          player.y = canvas.height / 2;
-          if (currentRoom.type === "altar")
-            altars.push({
-              x: canvas.width / 2,
-              y: canvas.height / 2,
-              radius: 32,
-              used: false,
-            });
-          else if (currentRoom.type === "combat") {
-            const count = index === 1 ? 4 : 7;
-            for (let i = 0; i < count; i++) {
-              const type =
-                i % 2 === 0
-                  ? "cherub"
-                  : index >= 3 && i % 3 === 0
-                    ? "turret"
-                    : "flagellant";
-              enemies.push(
-                createEnemy(
-                  type,
-                  450 + Math.random() * 400,
-                  100 + Math.random() * 440,
-                ),
-              );
-            }
-          } else if (currentRoom.type === "boss") {
-            document.getElementById("boss-hud").style.display = "block";
-            showDialogue(SCRIPT_BOSS_INTRO, () => {
-              playSound("boss_roar");
-              boss = createBoss();
-              enemies.push(boss);
-            });
-          }
-          if (currentRoom.tabletId !== undefined) {
-            const tData = LORE_TABLETS[currentRoom.tabletId];
-            if (tData)
-              tablets.push({
-                x: currentRoom.type === "start" ? 320 : 380,
-                y: 180,
-                radius: 22,
-                read: false,
-                data: tData,
+          }),
+          loadRoom = (index) => {
+            currentRoomIndex = index;
+            currentRoom = ROOM_LAYOUT[index];
+            $("room-text").innerText = index + 1 + "/6";
+            playerBullets = [];
+            enemyBullets = [];
+            enemies = [];
+            altars = [];
+            tablets = [];
+            drops = [];
+            sunStrikes = [];
+            player.x = 140;
+            player.y = canvas.height / 2;
+            if (currentRoom.type === "altar")
+              altars.push({
+                x: canvas.width / 2,
+                y: canvas.height / 2,
+                radius: 32,
+                used: !1,
               });
-          }
-          drawMinimap();
-        }
-
-        function checkRoomClear() {
-          if (currentRoom.type === "boss" && (!boss || boss.hp <= 0)) {
-            document.getElementById("boss-hud").style.display = "none";
-            showDialogue(SCRIPT_VICTORY, () => {
-              currentState = STATE_VICTORY;
-              document.getElementById("screen-overlay").style.display = "flex";
-              document.querySelector(".title-main").innerText =
-                "VICTORY: THE ETERNAL NAP";
-              document.querySelector(".title-sub").innerHTML =
-                "The Solar Spire has fallen. The world enters a peaceful, cool twilight.<br><br>Vespera curls up for 500 years of quiet, uninterrupted sleep.";
-              document.getElementById("start-btn").innerText =
-                "REST AGAIN (RESTART)";
-            });
-            return;
-          }
-          if (!currentRoom.cleared && enemies.length === 0) {
-            currentRoom.cleared = true;
-            playSound("boon");
+            else if (currentRoom.type === "combat") {
+              const count = index === 1 ? 4 : 7;
+              for (let i = 0; i < count; i++) {
+                const type =
+                  i % 2 === 0
+                    ? "cherub"
+                    : index >= 3 && i % 3 === 0
+                      ? "turret"
+                      : "flagellant";
+                enemies.push(
+                  createEnemy(type, 450 + R() * 400, 100 + R() * 440),
+                );
+              }
+            } else if (currentRoom.type === "boss") {
+              $("boss-hud").style.display = "block";
+              showDialogue(SCRIPT_BOSS, () => {
+                playSound("boss_roar");
+                boss = createBoss();
+                enemies.push(boss);
+              });
+            }
+            if (currentRoom.tabletId !== undefined) {
+              const tData = LORE_TABLETS[currentRoom.tabletId];
+              if (tData)
+                tablets.push({
+                  x: currentRoom.type === "start" ? 320 : 380,
+                  y: 180,
+                  radius: 22,
+                  read: !1,
+                  data: tData,
+                });
+            }
             drawMinimap();
-          }
-        }
-
-        function showBoonSelection() {
-          currentState = STATE_BOON;
-          const overlay = document.getElementById("boon-overlay");
-          const container = document.getElementById("boon-cards");
-          container.innerHTML = "";
-          const available = ALL_BOONS.filter((b) => !player.boons[b.id]);
-          const choices = available.sort(() => 0.5 - Math.random()).slice(0, 3);
-          choices.forEach((b) => {
-            const card = document.createElement("div");
-            card.className = "boon-card";
-            card.innerHTML = `<div class="boon-title">${b.title}</div><div class="boon-desc">${b.desc}</div><div class="boon-flavor">${b.flavor}</div>`;
-            card.onclick = () => {
-              player.boons[b.id] = true;
+          },
+          checkRoomClear = () => {
+            if (currentRoom.type === "boss" && (!boss || boss.hp <= 0)) {
+              $("boss-hud").style.display = "none";
+              showDialogue(SCRIPT_WIN, () => {
+                currentState = 4;
+                $("screen-overlay").style.display = "flex";
+                document.querySelector(".title-main").innerText =
+                  "VICTORY: THE ETERNAL NAP";
+                document.querySelector(".title-sub").innerHTML =
+                  "The Solar Spire has fallen. The world enters a peaceful, cool twilight.<br><br>Vespera curls up for 500 years of quiet, uninterrupted sleep.";
+                $("start-btn").innerText = "REST AGAIN (RESTART)";
+              });
+              return;
+            }
+            if (!currentRoom.cleared && enemies.length === 0) {
+              currentRoom.cleared = !0;
               playSound("boon");
-              overlay.style.display = "none";
-              currentState = STATE_PLAYING;
-              const quip = BOON_QUIPS[b.id] || b.flavor;
-              showDialogue([
-                {
-                  speaker: `VESPERA - ON ACQUIRING ${b.title.toUpperCase()}`,
-                  text: quip,
-                },
-              ]);
-            };
-            container.appendChild(card);
-          });
-          overlay.style.display = "flex";
-        }
-
+              drawMinimap();
+            }
+          },
+          showBoonSelection = () => {
+            currentState = 2;
+            const overlay = $("boon-overlay"),
+              container = $("boon-cards");
+            container.innerHTML = "";
+            const available = BOONS.filter((b) => !player.boons[b[0]]),
+              choices = available.sort(() => 0.5 - R()).slice(0, 3);
+            choices.forEach((b) => {
+              const card = document.createElement("div");
+              card.className = "boon-card";
+              card.innerHTML = `<div class="boon-title">${b}</div><div class="boon-desc">${b}</div><div class="boon-flavor">${b}</div>`;
+              card.onclick = () => {
+                player.boons[b[0]] = !0;
+                playSound("boon");
+                overlay.style.display = "none";
+                currentState = 1;
+                showDialogue([[`VESPERA - ON ${b[1].toUpperCase()}`, b]]);
+              };
+              container.appendChild(card);
+            });
+            overlay.style.display = "flex";
+          };
         let lastTime = performance.now();
-        function update(dt) {
-          if (currentState !== STATE_PLAYING) return;
+        const update = (dt) => {
+          if (currentState !== 1) return;
           const bossPhase = boss ? boss.phase : 1;
           updateMusic(
             dt,
             currentRoom && currentRoom.type === "boss",
             bossPhase,
           );
-
           let dx = 0,
             dy = 0;
           if (keys["w"] || keys["arrowup"]) dy -= 1;
           if (keys["s"] || keys["arrowdown"]) dy += 1;
           if (keys["a"] || keys["arrowleft"]) dx -= 1;
           if (keys["d"] || keys["arrowright"]) dx += 1;
-
           const moving = dx !== 0 || dy !== 0;
           if (moving) {
             player.stillTimer = 0;
             player.gallopPhase += dt * 14;
-            const len = Math.hypot(dx, dy);
+            const len = H(dx, dy);
             let curSpeed = player.speed;
             if (player.boons.terminalInsomnia && player.hp < player.maxHp * 0.5)
               curSpeed *= 1.45;
             player.vx = (dx / len) * curSpeed;
             player.vy = (dy / len) * curSpeed;
-
-            if (Math.random() < 0.3) {
+            if (R() < 0.3) {
               particles.push({
-                x:
-                  player.x -
-                  Math.cos(player.facingAngle) * 20 +
-                  (Math.random() - 0.5) * 10,
-                y:
-                  player.y -
-                  Math.sin(player.facingAngle) * 20 +
-                  (Math.random() - 0.5) * 10,
-                vx: (Math.random() - 0.5) * 20,
-                vy: (Math.random() - 0.5) * 20,
-                radius: Math.random() * 3 + 1.5,
+                x: player.x - C(player.facingAngle) * 20 + (R() - 0.5) * 10,
+                y: player.y - S(player.facingAngle) * 20 + (R() - 0.5) * 10,
+                vx: (R() - 0.5) * 20,
+                vy: (R() - 0.5) * 20,
+                radius: R() * 3 + 1.5,
                 color: "#7c3aed",
                 alpha: 0.6,
-                decay: 2.0,
+                decay: 2,
               });
             }
           } else {
@@ -1108,20 +1024,17 @@
             player.vx = 0;
             player.vy = 0;
           }
-
           const isApathyActive =
             player.boons.weaponizedApathy && player.stillTimer > 0.4;
-
           if (player.dashTimer > 0) player.dashTimer -= dt;
           if ((keys[" "] || keys["shift"]) && player.dashTimer <= 0 && moving) {
-            player.isDashing = true;
+            player.isDashing = !0;
             player.dashTimeRemaining = player.dashDuration;
             player.dashTimer = player.dashCooldown;
             player.invincibleTimer = player.dashDuration + 0.05;
             playSound("dash");
             triggerShake(3);
           }
-
           if (player.isDashing) {
             player.dashTimeRemaining -= dt;
             player.x += player.vx * 2.4 * dt;
@@ -1129,48 +1042,36 @@
             particles.push({
               x: player.x,
               y: player.y,
-              vx: (Math.random() - 0.5) * 30,
-              vy: (Math.random() - 0.5) * 30,
-              radius: Math.random() * 6 + 3,
+              vx: (R() - 0.5) * 30,
+              vy: (R() - 0.5) * 30,
+              radius: R() * 6 + 3,
               color: player.boons.metalHooves ? "#ff2255" : "#c084fc",
               alpha: 0.85,
               decay: 2.5,
             });
-            if (player.dashTimeRemaining <= 0) player.isDashing = false;
+            if (player.dashTimeRemaining <= 0) player.isDashing = !1;
           } else {
             player.x += player.vx * dt;
             player.y += player.vy * dt;
           }
-
           const margin = 48;
-          player.x = Math.max(
-            margin,
-            Math.min(canvas.width - margin, player.x),
-          );
-          player.y = Math.max(
-            margin,
-            Math.min(canvas.height - margin, player.y),
-          );
-          player.facingAngle = Math.atan2(
-            mouse.y - player.y,
-            mouse.x - player.x,
-          );
-
+          player.x = M.max(margin, M.min(canvas.width - margin, player.x));
+          player.y = M.max(margin, M.min(canvas.height - margin, player.y));
+          player.facingAngle = A(mouse.y - player.y, mouse.x - player.x);
           if (player.fireTimer > 0) player.fireTimer -= dt;
           let actualFireRate = player.fireRate;
           if (player.boons.terminalInsomnia && player.hp < player.maxHp * 0.5)
             actualFireRate *= 0.65;
-
           if (mouse.leftDown && player.fireTimer <= 0) {
             player.fireTimer = actualFireRate;
             playSound("shoot");
             triggerShake(1.5);
             const speed = player.boons.ricochet ? 650 : 540;
             playerBullets.push({
-              x: player.x + Math.cos(player.facingAngle) * 36,
-              y: player.y + Math.sin(player.facingAngle) * 36,
-              vx: Math.cos(player.facingAngle) * speed,
-              vy: Math.sin(player.facingAngle) * speed,
+              x: player.x + C(player.facingAngle) * 36,
+              y: player.y + S(player.facingAngle) * 36,
+              vx: C(player.facingAngle) * speed,
+              vy: S(player.facingAngle) * speed,
               radius: 5,
               damage: 26,
               pierce: player.boons.piercingCynicism ? 99 : 1,
@@ -1178,24 +1079,19 @@
               color: "#f43f5e",
             });
           }
-
           if (player.pulseTimer > 0) player.pulseTimer -= dt;
           let actualPulseCD =
-            player.pulseCooldown *
-            (player.boons.eclipseSingularity ? 0.6 : 1.0);
+            player.pulseCooldown * (player.boons.eclipseSingularity ? 0.6 : 1);
           if (mouse.rightDown && player.pulseTimer <= 0) {
             player.pulseTimer = actualPulseCD;
             playSound("pulse");
             triggerShake(6);
             const pulseRadius = 140;
             enemyBullets = enemyBullets.filter(
-              (b) => Math.hypot(b.x - player.x, b.y - player.y) > pulseRadius,
+              (b) => H(b.x - player.x, b.y - player.y) > pulseRadius,
             );
             enemies.forEach((e) => {
-              if (
-                Math.hypot(e.x - player.x, e.y - player.y) <
-                pulseRadius + e.radius
-              ) {
+              if (H(e.x - player.x, e.y - player.y) < pulseRadius + e.radius) {
                 e.hp -= 40;
                 particles.push({
                   x: e.x,
@@ -1212,12 +1108,12 @@
                 }
               }
             });
-            for (let a = 0; a < Math.PI * 2; a += 0.2) {
+            for (let a = 0; a < TAU; a += 0.2) {
               particles.push({
                 x: player.x,
                 y: player.y,
-                vx: Math.cos(a) * 280,
-                vy: Math.sin(a) * 280,
+                vx: C(a) * 280,
+                vy: S(a) * 280,
                 radius: 4,
                 color: "#d946ef",
                 alpha: 1,
@@ -1225,56 +1121,46 @@
               });
             }
           }
-
           if (
             currentRoom.cleared &&
             player.x > canvas.width - 60 &&
-            Math.abs(player.y - canvas.height / 2) < 60
+            M.abs(player.y - canvas.height / 2) < 60
           ) {
             if (currentRoomIndex + 1 < ROOM_LAYOUT.length)
               loadRoom(currentRoomIndex + 1);
           }
-
           altars.forEach((a) => {
             if (
               !a.used &&
-              Math.hypot(player.x - a.x, player.y - a.y) <
-                a.radius + player.radius
+              H(player.x - a.x, player.y - a.y) < a.radius + player.radius
             ) {
-              a.used = true;
-              currentRoom.cleared = true;
+              a.used = !0;
+              currentRoom.cleared = !0;
               showBoonSelection();
             }
           });
-
           tablets.forEach((t) => {
             if (
               !t.read &&
-              Math.hypot(player.x - t.x, player.y - t.y) <
-                t.radius + player.radius
+              H(player.x - t.x, player.y - t.y) < t.radius + player.radius
             ) {
-              t.read = true;
+              t.read = !0;
               playSound("boon");
               showDialogue([
-                {
-                  speaker: `DECREE: ${t.data.title.toUpperCase()}`,
-                  text: `"${t.data.edict}"`,
-                },
-                { speaker: "VESPERA THE SOMBER", text: `"${t.data.reaction}"` },
+                [t.data[0], t.data],
+                ["VESPERA", t.data[2]],
               ]);
             }
           });
-
           for (let i = sunStrikes.length - 1; i >= 0; i--) {
             const s = sunStrikes[i];
             s.timer += dt;
             if (!s.blasted && s.timer >= s.chargeTime) {
-              s.blasted = true;
+              s.blasted = !0;
               playSound("strike_blast");
               triggerShake(7);
               if (
-                Math.hypot(player.x - s.x, player.y - s.y) <
-                  s.radius + player.radius &&
+                H(player.x - s.x, player.y - s.y) < s.radius + player.radius &&
                 player.invincibleTimer <= 0
               )
                 damagePlayer(25);
@@ -1282,9 +1168,9 @@
                 particles.push({
                   x: s.x,
                   y: s.y,
-                  vx: (Math.random() - 0.5) * 220,
-                  vy: (Math.random() - 0.5) * 220,
-                  radius: Math.random() * 5 + 2,
+                  vx: (R() - 0.5) * 220,
+                  vy: (R() - 0.5) * 220,
+                  radius: R() * 5 + 2,
                   color: "#ffea00",
                   alpha: 1,
                   decay: 2.5,
@@ -1293,7 +1179,6 @@
             }
             if (s.timer >= s.chargeTime + 0.35) sunStrikes.splice(i, 1);
           }
-
           for (let i = playerBullets.length - 1; i >= 0; i--) {
             const b = playerBullets[i];
             b.x += b.vx * dt;
@@ -1318,13 +1203,13 @@
             }
             for (let j = enemies.length - 1; j >= 0; j--) {
               const e = enemies[j];
-              if (Math.hypot(b.x - e.x, b.y - e.y) < b.radius + e.radius) {
+              if (H(b.x - e.x, b.y - e.y) < b.radius + e.radius) {
                 e.hp -= b.damage;
                 playSound("hit");
                 particles.push({
                   x: e.x,
                   y: e.y,
-                  vx: (Math.random() - 0.5) * 40,
+                  vx: (R() - 0.5) * 40,
                   vy: -35,
                   text: `-${b.damage}`,
                   color: "#c084fc",
@@ -1338,48 +1223,39 @@
               }
             }
           }
-
           for (let i = enemies.length - 1; i >= 0; i--) {
             const e = enemies[i];
             if (e.hp <= 0) {
               playSound("kill");
               player.shards += e.type === "boss" ? 50 : 5;
-              document.getElementById("shard-text").innerText = player.shards;
-              if (player.boons.darkCatharsis && Math.random() < 0.35)
-                drops.push({
-                  x: e.x,
-                  y: e.y,
-                  radius: 10,
-                  type: "heal",
-                  val: 15,
-                });
+              $("shard-text").innerText = player.shards;
+              if (player.boons.darkCatharsis && R() < 0.35)
+                drops.push({ x: e.x, y: e.y, radius: 10, val: 15 });
               for (let p = 0; p < 16; p++) {
                 particles.push({
                   x: e.x,
                   y: e.y,
-                  vx: (Math.random() - 0.5) * 180,
-                  vy: (Math.random() - 0.5) * 180,
-                  radius: Math.random() * 4 + 2,
+                  vx: (R() - 0.5) * 180,
+                  vy: (R() - 0.5) * 180,
+                  radius: R() * 4 + 2,
                   color: e.color,
                   alpha: 1,
-                  decay: 2.0,
+                  decay: 2,
                 });
               }
               enemies.splice(i, 1);
               checkRoomClear();
               continue;
             }
-
-            const toPlayerAngle = Math.atan2(player.y - e.y, player.x - e.x);
-            const distToPlayer = Math.hypot(player.x - e.x, player.y - e.y);
-
+            const toPlayerAngle = A(player.y - e.y, player.x - e.x),
+              distToPlayer = H(player.x - e.x, player.y - e.y);
             if (e.type === "cherub") {
               if (distToPlayer < 180) {
-                e.x -= Math.cos(toPlayerAngle) * e.speed * dt;
-                e.y -= Math.sin(toPlayerAngle) * e.speed * dt;
+                e.x -= C(toPlayerAngle) * e.speed * dt;
+                e.y -= S(toPlayerAngle) * e.speed * dt;
               } else if (distToPlayer > 300) {
-                e.x += Math.cos(toPlayerAngle) * e.speed * dt;
-                e.y += Math.sin(toPlayerAngle) * e.speed * dt;
+                e.x += C(toPlayerAngle) * e.speed * dt;
+                e.y += S(toPlayerAngle) * e.speed * dt;
               }
               e.attackTimer += dt;
               if (e.attackTimer >= e.attackRate) {
@@ -1388,8 +1264,8 @@
                   enemyBullets.push({
                     x: e.x,
                     y: e.y,
-                    vx: Math.cos(toPlayerAngle + ang) * 180,
-                    vy: Math.sin(toPlayerAngle + ang) * 180,
+                    vx: C(toPlayerAngle + ang) * 180,
+                    vy: S(toPlayerAngle + ang) * 180,
                     radius: 5,
                     color: "#ffdd55",
                     damage: 12,
@@ -1397,8 +1273,8 @@
                 }
               }
             } else if (e.type === "flagellant") {
-              e.x += Math.cos(toPlayerAngle) * e.speed * dt;
-              e.y += Math.sin(toPlayerAngle) * e.speed * dt;
+              e.x += C(toPlayerAngle) * e.speed * dt;
+              e.y += S(toPlayerAngle) * e.speed * dt;
               if (
                 distToPlayer < e.radius + player.radius &&
                 player.invincibleTimer <= 0
@@ -1410,12 +1286,12 @@
               if (e.attackTimer >= e.attackRate) {
                 e.attackTimer = 0;
                 for (let a = 0; a < 4; a++) {
-                  const rot = e.angle + (a * Math.PI) / 2;
+                  const rot = e.angle + (a * PI) / 2;
                   enemyBullets.push({
                     x: e.x,
                     y: e.y,
-                    vx: Math.cos(rot) * 160,
-                    vy: Math.sin(rot) * 160,
+                    vx: C(rot) * 160,
+                    vy: S(rot) * 160,
                     radius: 6,
                     color: "#ffea00",
                     damage: 14,
@@ -1424,48 +1300,44 @@
               }
             } else if (e.type === "boss") {
               const hpPercent = e.hp / e.maxHp;
-              document.getElementById("boss-bar-fill").style.width =
-                `${Math.max(0, hpPercent * 100)}%`;
+              $("boss-bar-fill").style.width = `${M.max(0, hpPercent * 100)}%`;
               e.attackTimer += dt;
               e.spinAngle += dt * (e.phase === 3 ? 3.6 : 2.2);
-
               if (hpPercent > 0.66) {
                 e.phase = 1;
                 e.color = "#ffd700";
-                document.getElementById("boss-name").innerText =
+                $("boss-name").innerText =
                   "ARCH-PRECEPTOR VALERIUS - PHASE 1: SOLAR LITURGY";
               } else if (hpPercent > 0.33) {
                 e.phase = 2;
                 e.color = "#ff9900";
-                document.getElementById("boss-name").innerText =
+                $("boss-name").innerText =
                   "ARCH-PRECEPTOR VALERIUS - PHASE 2: ORBITAL RETRIBUTION";
               } else {
                 e.phase = 3;
                 e.color = "#ff2255";
-                document.getElementById("boss-name").innerText =
+                $("boss-name").innerText =
                   "ARCH-PRECEPTOR VALERIUS - PHASE 3: THE ENRAGED SERMON";
               }
-
-              const moveSpeed = e.phase === 3 ? 1.4 : 1.0;
+              const moveSpeed = e.phase === 3 ? 1.4 : 1;
               e.y =
                 canvas.height / 2 +
-                Math.sin(performance.now() * 0.0025 * moveSpeed) *
+                S(performance.now() * 0.0025 * moveSpeed) *
                   (e.phase === 3 ? 160 : 120);
               e.x =
                 canvas.width -
                 200 +
-                Math.cos(performance.now() * 0.0012 * moveSpeed) * 90;
-
+                C(performance.now() * 0.0012 * moveSpeed) * 90;
               if (e.phase === 1) {
                 if (e.attackTimer >= 1.3) {
                   e.attackTimer = 0;
                   for (let a = 0; a < 8; a++) {
-                    const ang = e.spinAngle + (a * Math.PI) / 4;
+                    const ang = e.spinAngle + (a * PI) / 4;
                     enemyBullets.push({
                       x: e.x,
                       y: e.y,
-                      vx: Math.cos(ang) * 190,
-                      vy: Math.sin(ang) * 190,
+                      vx: C(ang) * 190,
+                      vy: S(ang) * 190,
                       radius: 6,
                       color: "#ffe600",
                       damage: 15,
@@ -1483,15 +1355,15 @@
                     radius: 48,
                     timer: 0,
                     chargeTime: 0.8,
-                    blasted: false,
+                    blasted: !1,
                   });
                   sunStrikes.push({
-                    x: player.x + (Math.random() - 0.5) * 120,
-                    y: player.y + (Math.random() - 0.5) * 120,
+                    x: player.x + (R() - 0.5) * 120,
+                    y: player.y + (R() - 0.5) * 120,
                     radius: 48,
                     timer: 0,
                     chargeTime: 0.9,
-                    blasted: false,
+                    blasted: !1,
                   });
                 }
                 if (e.attackTimer >= 1.2) {
@@ -1500,8 +1372,8 @@
                     enemyBullets.push({
                       x: e.x,
                       y: e.y,
-                      vx: Math.cos(toPlayerAngle + a) * 230,
-                      vy: Math.sin(toPlayerAngle + a) * 230,
+                      vx: C(toPlayerAngle + a) * 230,
+                      vy: S(toPlayerAngle + a) * 230,
                       radius: 7,
                       color: "#ff8800",
                       damage: 18,
@@ -1519,18 +1391,18 @@
                     radius: 56,
                     timer: 0,
                     chargeTime: 0.7,
-                    blasted: false,
+                    blasted: !1,
                   });
                 }
                 if (e.attackTimer >= 0.85) {
                   e.attackTimer = 0;
                   for (let a = 0; a < 12; a++) {
-                    const ang = e.spinAngle + (a * Math.PI) / 6;
+                    const ang = e.spinAngle + (a * PI) / 6;
                     enemyBullets.push({
                       x: e.x,
                       y: e.y,
-                      vx: Math.cos(ang) * 210,
-                      vy: Math.sin(ang) * 210,
+                      vx: C(ang) * 210,
+                      vy: S(ang) * 210,
                       radius: 6.5,
                       color: "#ff2255",
                       damage: 20,
@@ -1538,25 +1410,24 @@
                   }
                 }
                 e.laserTimer += dt;
-                if (e.laserTimer >= 4.0) {
-                  e.isFiringLaser = true;
+                if (e.laserTimer >= 4) {
+                  e.isFiringLaser = !0;
                   e.laserAngle += dt * 1.6;
                   if (e.laserTimer >= 5.5) {
-                    e.isFiringLaser = false;
+                    e.isFiringLaser = !1;
                     e.laserTimer = 0;
                     e.laserAngle = 0;
                   } else {
-                    const curAngle =
-                      toPlayerAngle + Math.sin(e.laserAngle) * 0.8;
-                    const lEndX = e.x + Math.cos(curAngle) * 800,
-                      lEndY = e.y + Math.sin(curAngle) * 800;
-                    const lineDist =
-                      Math.abs(
-                        (lEndY - e.y) * player.x -
-                          (lEndX - e.x) * player.y +
-                          lEndX * e.y -
-                          lEndY * e.x,
-                      ) / Math.hypot(lEndY - e.y, lEndX - e.x);
+                    const curAngle = toPlayerAngle + S(e.laserAngle) * 0.8,
+                      lEndX = e.x + C(curAngle) * 800,
+                      lEndY = e.y + S(curAngle) * 800,
+                      lineDist =
+                        M.abs(
+                          (lEndY - e.y) * player.x -
+                            (lEndX - e.x) * player.y +
+                            lEndX * e.y -
+                            lEndY * e.x,
+                        ) / H(lEndY - e.y, lEndX - e.x);
                     if (
                       lineDist < player.radius + 14 &&
                       player.invincibleTimer <= 0
@@ -1567,10 +1438,9 @@
               }
             }
           }
-
           for (let i = enemyBullets.length - 1; i >= 0; i--) {
-            const b = enemyBullets[i];
-            const speedMod = isApathyActive ? 0.4 : 1.0;
+            const b = enemyBullets[i],
+              speedMod = isApathyActive ? 0.4 : 1;
             b.x += b.vx * speedMod * dt;
             b.y += b.vy * speedMod * dt;
             if (
@@ -1582,24 +1452,17 @@
               enemyBullets.splice(i, 1);
               continue;
             }
-            if (
-              Math.hypot(b.x - player.x, b.y - player.y) <
-              b.radius + player.radius
-            ) {
+            if (H(b.x - player.x, b.y - player.y) < b.radius + player.radius) {
               if (player.invincibleTimer <= 0) {
                 damagePlayer(b.damage);
                 enemyBullets.splice(i, 1);
               }
             }
           }
-
           for (let i = drops.length - 1; i >= 0; i--) {
             const d = drops[i];
-            if (
-              Math.hypot(player.x - d.x, player.y - d.y) <
-              d.radius + player.radius
-            ) {
-              player.hp = Math.min(player.maxHp, player.hp + d.val);
+            if (H(player.x - d.x, player.y - d.y) < d.radius + player.radius) {
+              player.hp = M.min(player.maxHp, player.hp + d.val);
               playSound("boon");
               particles.push({
                 x: player.x,
@@ -1613,7 +1476,6 @@
               drops.splice(i, 1);
             }
           }
-
           for (let i = particles.length - 1; i >= 0; i--) {
             const p = particles[i];
             if (p.text) {
@@ -1627,22 +1489,19 @@
               if (p.alpha <= 0) particles.splice(i, 1);
             }
           }
-
           if (player.invincibleTimer > 0) player.invincibleTimer -= dt;
           if (shakeIntensity > 0)
-            shakeIntensity = Math.max(0, shakeIntensity - dt * 25);
-
-          document.getElementById("health-bar").style.width =
-            `${Math.max(0, (player.hp / player.maxHp) * 100)}%`;
-          document.getElementById("health-text").innerText =
-            `HP: ${Math.max(0, Math.ceil(player.hp))} / ${player.maxHp}`;
-          document.getElementById("cd-pulse").style.height =
+            shakeIntensity = M.max(0, shakeIntensity - dt * 25);
+          $("health-bar").style.width =
+            `${M.max(0, (player.hp / player.maxHp) * 100)}%`;
+          $("health-text").innerText =
+            `HP: ${M.max(0, M.ceil(player.hp))} / ${player.maxHp}`;
+          $("cd-pulse").style.height =
             `${(player.pulseTimer / actualPulseCD) * 100}%`;
-          document.getElementById("cd-dash").style.height =
+          $("cd-dash").style.height =
             `${(player.dashTimer / player.dashCooldown) * 100}%`;
-        }
-
-        function damagePlayer(dmg) {
+        };
+        const damagePlayer = (dmg) => {
           player.hp -= dmg;
           player.invincibleTimer = 0.35;
           playSound("hit");
@@ -1657,27 +1516,24 @@
             life: 0.6,
           });
           if (player.hp <= 0) {
-            currentState = STATE_GAMEOVER;
-            document.getElementById("screen-overlay").style.display = "flex";
+            currentState = 3;
+            $("screen-overlay").style.display = "flex";
             document.querySelector(".title-main").innerText =
               "DEFEATED BY GLITTER";
             document.querySelector(".title-sub").innerText =
               "The Choir of Perpetual Smiles has overwhelmed you. Mandatory joy continues unabated.";
-            document.getElementById("start-btn").innerText =
-              "TRY AGAIN (RESTART)";
+            $("start-btn").innerText = "TRY AGAIN (RESTART)";
           }
-        }
-
-        function draw() {
+        };
+        const draw = () => {
           ctx.save();
           ctx.clearRect(0, 0, canvas.width, canvas.height);
           if (shakeIntensity > 0) {
             ctx.translate(
-              (Math.random() - 0.5) * shakeIntensity,
-              (Math.random() - 0.5) * shakeIntensity,
+              (R() - 0.5) * shakeIntensity,
+              (R() - 0.5) * shakeIntensity,
             );
           }
-
           ctx.fillStyle = "#0e0a1a";
           ctx.fillRect(40, 40, canvas.width - 80, canvas.height - 80);
           ctx.strokeStyle = "#22163d";
@@ -1697,7 +1553,6 @@
           ctx.strokeStyle = "#7c3aed";
           ctx.lineWidth = 6;
           ctx.strokeRect(40, 40, canvas.width - 80, canvas.height - 80);
-
           if (currentRoom && currentRoom.cleared) {
             ctx.fillStyle = "#d946ef";
             ctx.fillRect(canvas.width - 46, canvas.height / 2 - 45, 10, 90);
@@ -1708,11 +1563,10 @@
             ctx.fillText("EXIT →", canvas.width - 98, canvas.height / 2 + 5);
             ctx.shadowBlur = 0;
           }
-
           altars.forEach((a) => {
             ctx.fillStyle = a.used ? "#3b1d6e" : "#9333ea";
             ctx.beginPath();
-            ctx.arc(a.x, a.y, a.radius, 0, Math.PI * 2);
+            ctx.arc(a.x, a.y, a.radius, 0, TAU);
             ctx.fill();
             ctx.strokeStyle = "#f3e8ff";
             ctx.lineWidth = 3;
@@ -1725,7 +1579,6 @@
               a.y + 4,
             );
           });
-
           tablets.forEach((t) => {
             ctx.save();
             ctx.fillStyle = t.read ? "#2d1b4e" : "#9333ea";
@@ -1741,11 +1594,10 @@
             ctx.fillText(t.read ? "READ" : "[EDICT]", t.x - 20, t.y + 32);
             ctx.restore();
           });
-
           drops.forEach((d) => {
             ctx.fillStyle = "#4ade80";
             ctx.beginPath();
-            ctx.arc(d.x, d.y, d.radius, 0, Math.PI * 2);
+            ctx.arc(d.x, d.y, d.radius, 0, TAU);
             ctx.fill();
             ctx.shadowColor = "#86efac";
             ctx.shadowBlur = 10;
@@ -1753,30 +1605,22 @@
             ctx.fillText("♥", d.x - 4, d.y + 4);
             ctx.shadowBlur = 0;
           });
-
           sunStrikes.forEach((s) => {
             ctx.save();
-            const progress = Math.min(1, s.timer / s.chargeTime);
+            const progress = M.min(1, s.timer / s.chargeTime);
             ctx.strokeStyle = s.blasted ? "#ffffff" : "#ffea00";
             ctx.lineWidth = s.blasted ? 8 : 2;
             ctx.beginPath();
-            ctx.arc(
-              s.x,
-              s.y,
-              s.radius * (s.blasted ? 1.1 : progress),
-              0,
-              Math.PI * 2,
-            );
+            ctx.arc(s.x, s.y, s.radius * (s.blasted ? 1.1 : progress), 0, TAU);
             ctx.stroke();
             ctx.fillStyle = s.blasted
               ? "rgba(255,255,255,0.7)"
               : `rgba(255,200,0,${progress * 0.4})`;
             ctx.beginPath();
-            ctx.arc(s.x, s.y, s.radius, 0, Math.PI * 2);
+            ctx.arc(s.x, s.y, s.radius, 0, TAU);
             ctx.fill();
             ctx.restore();
           });
-
           particles.forEach((p) => {
             if (p.text) {
               ctx.fillStyle = p.color;
@@ -1786,32 +1630,29 @@
               ctx.fillStyle = p.color;
               ctx.globalAlpha = p.alpha;
               ctx.beginPath();
-              ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+              ctx.arc(p.x, p.y, p.radius, 0, TAU);
               ctx.fill();
               ctx.globalAlpha = 1;
             }
           });
-
           playerBullets.forEach((b) => {
             ctx.fillStyle = b.color;
             ctx.shadowColor = "#f43f5e";
             ctx.shadowBlur = 12;
             ctx.beginPath();
-            ctx.arc(b.x, b.y, b.radius, 0, Math.PI * 2);
+            ctx.arc(b.x, b.y, b.radius, 0, TAU);
             ctx.fill();
             ctx.shadowBlur = 0;
           });
-
           enemyBullets.forEach((b) => {
             ctx.fillStyle = b.color;
             ctx.shadowColor = b.color;
             ctx.shadowBlur = 8;
             ctx.beginPath();
-            ctx.arc(b.x, b.y, b.radius, 0, Math.PI * 2);
+            ctx.arc(b.x, b.y, b.radius, 0, TAU);
             ctx.fill();
             ctx.shadowBlur = 0;
           });
-
           enemies.forEach((e) => {
             ctx.save();
             ctx.translate(e.x, e.y);
@@ -1820,36 +1661,35 @@
               ctx.shadowColor = e.color;
               ctx.shadowBlur = 28;
               ctx.beginPath();
-              ctx.arc(0, 0, e.radius, 0, Math.PI * 2);
+              ctx.arc(0, 0, e.radius, 0, TAU);
               ctx.fill();
               ctx.shadowBlur = 0;
               ctx.strokeStyle = "#ffffff";
               ctx.lineWidth = e.phase === 3 ? 6 : 4;
               ctx.beginPath();
-              ctx.arc(0, 0, e.radius + 8, 0, Math.PI * 2);
+              ctx.arc(0, 0, e.radius + 8, 0, TAU);
               ctx.stroke();
               ctx.fillStyle = "#fff";
               ctx.beginPath();
-              ctx.arc(0, -6, 6, 0, Math.PI * 2);
+              ctx.arc(0, -6, 6, 0, TAU);
               ctx.fill();
-
               if (e.isFiringLaser) {
-                const toPlayer = Math.atan2(player.y - e.y, player.x - e.x);
-                const curAng = toPlayer + Math.sin(e.laserAngle) * 0.8;
+                const toPlayer = A(player.y - e.y, player.x - e.x),
+                  curAng = toPlayer + S(e.laserAngle) * 0.8;
                 ctx.strokeStyle = "#ff0055";
                 ctx.lineWidth = 18;
                 ctx.shadowColor = "#ff2255";
                 ctx.shadowBlur = 20;
                 ctx.beginPath();
                 ctx.moveTo(0, 0);
-                ctx.lineTo(Math.cos(curAng) * 900, Math.sin(curAng) * 900);
+                ctx.lineTo(C(curAng) * 900, S(curAng) * 900);
                 ctx.stroke();
                 ctx.shadowBlur = 0;
               }
             } else {
               ctx.fillStyle = e.color;
               ctx.beginPath();
-              ctx.arc(0, 0, e.radius, 0, Math.PI * 2);
+              ctx.arc(0, 0, e.radius, 0, TAU);
               ctx.fill();
               ctx.strokeStyle = "#fff";
               ctx.lineWidth = 2;
@@ -1864,33 +1704,24 @@
             );
             ctx.restore();
           });
-
-          // === PROCEDURAL EVIL OBSIDIAN UNICORN (VESPERA) ===
-          if (currentState === STATE_PLAYING || currentState === STATE_BOON) {
+          if (currentState === 1 || currentState === 2) {
             ctx.save();
             ctx.translate(player.x, player.y);
-
-            // 1. Swirling Void Shadow Aura
             const auraGrad = ctx.createRadialGradient(0, 0, 10, 0, 0, 44);
             auraGrad.addColorStop(0, "rgba(217, 70, 239, 0.4)");
             auraGrad.addColorStop(0.6, "rgba(124, 58, 237, 0.25)");
             auraGrad.addColorStop(1, "rgba(0, 0, 0, 0)");
             ctx.fillStyle = auraGrad;
             ctx.beginPath();
-            ctx.arc(0, 0, 44, 0, Math.PI * 2);
+            ctx.arc(0, 0, 44, 0, TAU);
             ctx.fill();
-
             ctx.rotate(player.facingAngle);
-
             if (
               player.invincibleTimer > 0 &&
               Math.floor(performance.now() / 60) % 2 === 0
-            ) {
+            )
               ctx.globalAlpha = 0.4;
-            }
-
-            // 2. Animated Demonic Flowing Tail
-            const tailWag = Math.sin(player.gallopPhase * 0.8) * 4;
+            const tailWag = S(player.gallopPhase * 0.8) * 4;
             ctx.fillStyle = "#d946ef";
             ctx.beginPath();
             ctx.moveTo(-22, 0);
@@ -1901,9 +1732,7 @@
             ctx.strokeStyle = "#f43f5e";
             ctx.lineWidth = 1.5;
             ctx.stroke();
-
-            // 3. Four Dark Steel Hooves with Gallop Physics
-            const legBob = Math.sin(player.gallopPhase) * 7;
+            const legBob = S(player.gallopPhase) * 7;
             ctx.fillStyle = "#1e163b";
             ctx.strokeStyle = "#e879f9";
             ctx.lineWidth = 2;
@@ -1915,17 +1744,13 @@
             ctx.strokeRect(-18, -16 - legBob, 8, 5);
             ctx.fillRect(-18, 11 + legBob, 8, 5);
             ctx.strokeRect(-18, 11 + legBob, 8, 5);
-
-            // 4. Muscular Equine Torso & Flanks
             ctx.fillStyle = "#130d24";
             ctx.strokeStyle = "#c084fc";
             ctx.lineWidth = 2.5;
             ctx.beginPath();
-            ctx.ellipse(-6, 0, 24, 15, 0, 0, Math.PI * 2);
+            ctx.ellipse(-6, 0, 24, 15, 0, 0, TAU);
             ctx.fill();
             ctx.stroke();
-
-            // 5. Arched Equine Neck & Snout
             ctx.fillStyle = "#1e1338";
             ctx.beginPath();
             ctx.moveTo(4, -10);
@@ -1938,13 +1763,9 @@
             ctx.strokeStyle = "#d8b4f8";
             ctx.lineWidth = 2;
             ctx.stroke();
-
-            // Nostrils (Sinister Embers)
             ctx.fillStyle = "#f43f5e";
             ctx.fillRect(25, -2, 2, 1.5);
             ctx.fillRect(25, 1, 2, 1.5);
-
-            // 6. Pointed Sharp Equine Ears
             ctx.fillStyle = "#2d1b54";
             ctx.strokeStyle = "#f472b6";
             ctx.lineWidth = 1.5;
@@ -1962,8 +1783,6 @@
             ctx.closePath();
             ctx.fill();
             ctx.stroke();
-
-            // 7. Spiky Jagged Purple Mane
             ctx.fillStyle = "#9333ea";
             ctx.beginPath();
             ctx.moveTo(-12, -7);
@@ -1977,8 +1796,6 @@
             ctx.strokeStyle = "#f43f5e";
             ctx.lineWidth = 1.5;
             ctx.stroke();
-
-            // 8. CRACKLING OBSIDIAN HORN
             ctx.fillStyle = "#ffffff";
             ctx.shadowColor = "#f43f5e";
             ctx.shadowBlur = 18;
@@ -1997,23 +1814,18 @@
             ctx.moveTo(32, -2);
             ctx.lineTo(34, 2);
             ctx.stroke();
-
-            // 9. Sinister Demonic Glowing Slit Eyes
             ctx.fillStyle = "#f43f5e";
             ctx.shadowColor = "#ff2255";
             ctx.shadowBlur = 10;
             ctx.beginPath();
-            ctx.ellipse(18, -5, 3.5, 1.5, 0.3, 0, Math.PI * 2);
+            ctx.ellipse(18, -5, 3.5, 1.5, 0.3, 0, TAU);
             ctx.fill();
             ctx.beginPath();
-            ctx.ellipse(18, 5, 3.5, 1.5, -0.3, 0, Math.PI * 2);
+            ctx.ellipse(18, 5, 3.5, 1.5, -0.3, 0, TAU);
             ctx.fill();
             ctx.shadowBlur = 0;
-
             ctx.restore();
           }
-
-          // Ambient Lighting
           const grad = ctx.createRadialGradient(
             player.x,
             player.y,
@@ -2026,39 +1838,35 @@
           grad.addColorStop(1, "rgba(6, 4, 12, 0.72)");
           ctx.fillStyle = grad;
           ctx.fillRect(0, 0, canvas.width, canvas.height);
-
           ctx.restore();
-        }
-
-        function gameLoop(now) {
-          const dt = Math.min((now - lastTime) / 1000, 0.05);
+        };
+        const gameLoop = (now) => {
+          const dt = M.min((now - lastTime) / 1000, 0.05);
           lastTime = now;
           update(dt);
           draw();
           requestAnimationFrame(gameLoop);
-        }
-
-        window.startGame = function () {
+        };
+        window.startGame = () => {
           try {
             initAudio();
-            const overlay = document.getElementById("screen-overlay");
+            const overlay = $("screen-overlay");
             if (overlay) overlay.style.display = "none";
             resetPlayer();
-            ROOM_LAYOUT.forEach((r) => (r.cleared = false));
-            ROOM_LAYOUT[0].cleared = true;
-            currentState = STATE_PLAYING;
+            ROOM_LAYOUT.forEach((r) => (r.cleared = !1));
+            ROOM_LAYOUT[0].cleared = !0;
+            currentState = 1;
             loadRoom(0);
             showDialogue(SCRIPT_INTRO);
           } catch (err) {
             console.error(err);
-            const eb = document.getElementById("error-banner");
+            const eb = $("error-banner");
             if (eb) {
               eb.style.display = "block";
               eb.innerText = `Start Error: ${err.message}`;
             }
           }
         };
-
         requestAnimationFrame(gameLoop);
       })();
     </script>
