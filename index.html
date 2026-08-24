@@ -824,7 +824,9 @@
               ae.push({ x: 480, y: 320, r: 32, u: !1 });
             else if ("combat" === G.type)
               for (
-                var w = G.w || 1, t = e.min(9, 3 + w + ((2 * i()) | 0)), a = 0;
+                var w = G.w || 1,
+                  t = Math.min(9, 3 + w + ((2 * i()) | 0)),
+                  a = 0;
                 a < t;
                 a++
               ) {
