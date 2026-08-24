@@ -25,9 +25,13 @@ The *Grand Concordat of Radiant Serenity* has criminalized naps, rain, and minor
 
 *(Landscape orientation recommended.)*
 
-## Features (v1.3)
+## Features (v1.4)
 - **Procedurally generated runs** — room order, count, and enemy composition vary each run.
 - **Cynical Boons** with a shard-funded **reroll** at altars.
+- **Buffed Somber Rainbow** — faster cooldown, wider cone, bigger arc.
+- **Dramatic three-phase boss duel** with a **slow-motion finishing blow**.
+- **Sim pauses during dialogue**, so banter lands without unfair damage.
+- **Procedural victory lullaby** ("The Eternal Nap").
 - **Pause / options overlay**, **mute**, and a **Reduced Motion** toggle (auto-detects `prefers-reduced-motion`).
 - **Best clear-time & shard tracking** saved to `localStorage`.
 - Responsive canvas that scales to any viewport.

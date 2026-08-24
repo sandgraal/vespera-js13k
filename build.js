@@ -32,7 +32,7 @@ const LIMIT = 13312;
 
   // 1) terser
   const t = await terser(rawJs, {
-    compress: { passes: 3, unsafe: true, unsafe_math: true, pure_getters: true },
+    compress: { passes: 3 },
     mangle: { toplevel: true },
     format: { comments: false },
   });
