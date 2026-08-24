@@ -51,14 +51,6 @@
         gap: 12px;
         align-items: center;
       }
-      .version-badge {
-        font-size: 10px;
-        color: #d8b4f8;
-        background: #2d1b4e;
-        padding: 2px 6px;
-        border-radius: 3px;
-        border: 1px solid #7c3aed;
-      }
       #hud-top-right {
         top: 16px;
         right: 20px;
@@ -228,6 +220,20 @@
         gap: 20px;
         margin-top: 24px;
       }
+      #boon-reroll {
+        margin-top: 22px;
+        font-size: 13px;
+        color: #c084fc;
+        cursor: pointer;
+        border: 1px solid #7c3aed;
+        border-radius: 6px;
+        padding: 8px 16px;
+        pointer-events: auto;
+      }
+      #boon-reroll:hover {
+        color: #fff;
+        border-color: #d8b4f8;
+      }
       .boon-card {
         width: 220px;
         background: #120924;
@@ -388,6 +394,7 @@
           <div class="boon-header">SELECT A CYNICAL BOON</div>
           <div class="boon-sub">Channel the power of natural melancholy</div>
           <div id="boon-cards"></div>
+          <div id="boon-reroll"></div>
         </div>
         <div id="screen-overlay">
           <div class="title-main">VESPERA: THE SOMBER</div>
@@ -398,6 +405,10 @@
             Lead the misunderstood obsidian unicorn to extinguish the Solar
             Spire and claim uninterrupted peace.
             <br /><br />
+            <b style="color: #d8b4f8; font-size: 12px"
+              >v1.3 — Procedural runs · Boon reroll · Pause &amp; options ·
+              Best-time saves</b
+            >
           </div>
           <button
             id="start-btn"
@@ -410,8 +421,9 @@
           <div class="controls-hint">
             WASD: Move &nbsp;|&nbsp; Mouse: Lance &nbsp;|&nbsp; Right-Click:
             Rainbow (Grump Arc) &nbsp;|&nbsp; Q: Scythe &nbsp;|&nbsp; Space:
-            Dash &nbsp;|&nbsp; Keys 1-6: Room Warp
+            Dash &nbsp;|&nbsp; P: Pause &nbsp;|&nbsp; M: Mute
           </div>
+          <div id="best-line" class="controls-hint"></div>
         </div>
       </div>
     </div>
@@ -463,7 +475,7 @@
             } catch (e) {}
           }
           function A(t, a, l, r, i) {
-            if (I)
+            if (I && !MUTE)
               try {
                 var o = I.currentTime,
                   n = I.createOscillator(),
@@ -517,6 +529,28 @@
                                       A(e, 0.9 * e, 0.2, "sine", 0.15);
                                     }, 70 * t);
                                   });
+          }
+          var MUTE = !1,
+            RM = !1,
+            PZ = !1,
+            RT = 0,
+            BEST = null;
+          try {
+            ((MUTE = "1" === localStorage.vespera_mute),
+              (RM =
+                "1" === localStorage.vespera_rm ||
+                (null == localStorage.vespera_rm &&
+                  matchMedia("(prefers-reduced-motion:reduce)").matches)),
+              (BEST = JSON.parse(localStorage.vespera_best || "null")));
+          } catch (e) {}
+          function saveOpt() {
+            try {
+              ((localStorage.vespera_mute = MUTE ? 1 : 0),
+                (localStorage.vespera_rm = RM ? 1 : 0));
+            } catch (e) {}
+          }
+          function fmt(s) {
+            return ((s / 60) | 0) + ":" + ("0" + ((s | 0) % 60)).slice(-2);
           }
           var L = 0;
           var D = [
@@ -634,14 +668,34 @@
               stillTimer: 0,
               boons: {},
             };
-          var U = [
-              { id: 0, type: "start", cleared: !0, tId: 0 },
-              { id: 1, type: "combat", cleared: !1, w: 2 },
-              { id: 2, type: "altar", cleared: !1, tId: 1 },
-              { id: 3, type: "combat", cleared: !1, w: 3, tId: 2 },
-              { id: 4, type: "altar", cleared: !1, tId: 3 },
-              { id: 5, type: "boss", cleared: !1, w: 1 },
-            ],
+          function genRun() {
+            var rooms = [{ type: "start", cleared: !0, tId: 0 }],
+              ed = 1,
+              segs = 2 + ((2 * i()) | 0),
+              sgi,
+              c,
+              cc;
+            for (sgi = 0; sgi < segs; sgi++) {
+              cc = 3 === segs ? 1 : 1 + ((2 * i()) | 0);
+              for (c = 0; c < cc; c++)
+                rooms.push({
+                  type: "combat",
+                  cleared: !1,
+                  w: 1 + sgi + ((2 * i()) | 0),
+                });
+              rooms.push({
+                type: "altar",
+                cleared: !1,
+                tId: ed < O.length ? ed++ : void 0,
+              });
+            }
+            rooms.push({ type: "boss", cleared: !1, w: 1 });
+            rooms.forEach(function (r, idx) {
+              r.id = idx;
+            });
+            return rooms;
+          }
+          var U = genRun(),
             q = 0,
             G = null,
             Y = 0,
@@ -665,7 +719,7 @@
             ne = 0,
             se = null;
           function fe(t) {
-            z = e.min(z + t, 16);
+            RM || (z = e.min(z + t, 16));
           }
           function de(e, t) {
             ((oe = e),
@@ -749,7 +803,7 @@
             if (
               ((Y = e),
               (G = U[e]),
-              (h.innerText = e + 1 + "/6"),
+              (h.innerText = e + 1 + "/" + U.length),
               (J = []),
               (K = []),
               (te = []),
@@ -769,15 +823,22 @@
             else if ("altar" === G.type)
               ae.push({ x: 480, y: 320, r: 32, u: !1 });
             else if ("combat" === G.type)
-              for (var t = 1 === e ? 4 : 7, a = 0; a < t; a++) {
-                var l =
-                  a % 2 == 0
-                    ? "cherub"
-                    : e >= 3 && 1 === a
-                      ? "bellringer"
-                      : e >= 3 && a % 3 == 0
-                        ? "turret"
-                        : "flagellant";
+              for (
+                var w = G.w || 1, t = e.min(9, 3 + w + ((2 * i()) | 0)), a = 0;
+                a < t;
+                a++
+              ) {
+                var rr = i(),
+                  l =
+                    rr < 0.4
+                      ? "cherub"
+                      : rr < 0.72
+                        ? "flagellant"
+                        : w >= 3 && rr < 0.86
+                          ? "turret"
+                          : w >= 2
+                            ? "bellringer"
+                            : "flagellant";
                 te.push(ye(l, 450 + 400 * i(), 100 + 440 * i()));
               }
             else
@@ -823,22 +884,48 @@
                 (p.style.display = "none"),
                 void de(V, function () {
                   ((q = 4), (k.style.display = "flex"));
+                  var tm = RT | 0,
+                    bt = BEST && BEST.t,
+                    bs = (BEST && BEST.s) || 0,
+                    rec = !bt || tm < bt;
+                  ((BEST = {
+                    t: rec ? tm : bt,
+                    s: M.shards > bs ? M.shards : bs,
+                  }),
+                    (function () {
+                      try {
+                        localStorage.vespera_best = JSON.stringify(BEST);
+                      } catch (e) {}
+                    })(),
+                    showBest());
                   var e = document.querySelector(".title-main");
                   e && (e.innerText = "VICTORY: THE ETERNAL NAP");
                   var t = document.querySelector(".title-sub");
                   (t &&
                     (t.innerHTML =
-                      "The Solar Spire has fallen. The world enters a peaceful twilight.<br><br>Vespera curls up for 500 years of quiet sleep."),
+                      "The Solar Spire has fallen. Vespera curls up for 500 years of quiet sleep.<br><br>Clear time <b style='color:#d8b4f8'>" +
+                      fmt(tm) +
+                      "</b> &nbsp;·&nbsp; Shards <b style='color:#d8b4f8'>" +
+                      M.shards +
+                      "</b>" +
+                      (rec
+                        ? " &nbsp;·&nbsp; <b style='color:#fde047'>NEW BEST!</b>"
+                        : " &nbsp;·&nbsp; Best " + fmt(BEST.t))),
                     (P.innerText = "REST AGAIN (RESTART)"));
                 })
               );
             G.cleared || 0 !== te.length || ((G.cleared = !0), H("boon"), ce());
           }
+          var DEV = /[?&]dev\b/.test(location.search);
           (window.addEventListener("keydown", function (e) {
             var t = e.key.toLowerCase();
             ((F[t] = !0),
               (" " !== t && "enter" !== t) || window.dismissDialogue(),
-              1 === q &&
+              "m" === t && (B(), (MUTE = !MUTE), saveOpt()),
+              "n" === t && ((RM = !RM), saveOpt()),
+              "p" === t && 1 === q && (PZ = !PZ),
+              DEV &&
+                1 === q &&
                 ("1" === t
                   ? he(0)
                   : "2" === t
@@ -879,9 +966,162 @@
                   ((se = null), e());
                 }
             }));
+          function fit() {
+            var sc = e.min(innerWidth / 960, innerHeight / 640);
+            ((s.style.width = 960 * sc + "px"),
+              (s.style.height = 640 * sc + "px"));
+          }
+          (addEventListener("resize", fit), fit());
+          function showBest() {
+            var b = document.querySelector("#best-line");
+            b &&
+              (b.innerText = BEST
+                ? "◈ Best clear " + fmt(BEST.t) + "  ·  Most shards " + BEST.s
+                : "");
+          }
+          showBest();
+          function drawBoons() {
+            ((R.innerHTML = ""),
+              N.filter(function (e) {
+                return !M.boons[e[0]];
+              })
+                .sort(function () {
+                  return 0.5 - i();
+                })
+                .slice(0, 3)
+                .forEach(function (e) {
+                  var t = document.createElement("div");
+                  ((t.className = "boon-card"),
+                    (t.innerHTML =
+                      '<div class="boon-title">' +
+                      e[1] +
+                      '</div><div class="boon-desc">' +
+                      e[2] +
+                      '</div><div class="boon-flavor">' +
+                      e[3] +
+                      "</div>"),
+                    (t.onclick = function () {
+                      ((M.boons[e[0]] = !0),
+                        H("boon"),
+                        (w.style.display = "none"),
+                        (q = 1),
+                        de([["VESPERA - ON " + e[1].toUpperCase(), e[3]]]));
+                    }),
+                    R.appendChild(t));
+                }));
+            var rr = document.getElementById("boon-reroll"),
+              ok = M.shards >= 20;
+            rr &&
+              ((rr.innerText =
+                (ok ? "↻ Reroll — 20 shards" : "↻ Reroll needs 20 shards") +
+                " (you have " +
+                M.shards +
+                ")"),
+              (rr.style.opacity = ok ? 1 : 0.4),
+              (rr.onclick = ok
+                ? function () {
+                    ((M.shards -= 20),
+                      (u.innerText = M.shards),
+                      H("dash"),
+                      drawBoons());
+                  }
+                : null));
+          }
+          var TCH = "ontouchstart" in window,
+            TM = { on: !1, x: 0, y: 0, o: { x: 0, y: 0 } },
+            AIM = { on: !1, dx: 1, dy: 0, o: { x: 0, y: 0 } },
+            mid = null,
+            aid = null,
+            BTN = [
+              { k: "rd", x: 884, y: 196, r: 30, t: "◗" },
+              { k: "q", x: 884, y: 288, r: 30, t: "Q" },
+              { k: "sp", x: 884, y: 380, r: 30, t: "⇢" },
+            ];
+          function tpos(t) {
+            var r2 = s.getBoundingClientRect();
+            return {
+              x: (t.clientX - r2.left) * (960 / r2.width),
+              y: (t.clientY - r2.top) * (640 / r2.height),
+            };
+          }
+          if (TCH) {
+            s.addEventListener(
+              "touchstart",
+              function (ev) {
+                (B(), ev.preventDefault());
+                for (var k2 = 0; k2 < ev.changedTouches.length; k2++) {
+                  var tt = ev.changedTouches[k2],
+                    p = tpos(tt),
+                    hit = null,
+                    bi;
+                  for (bi = 0; bi < BTN.length; bi++)
+                    if (l(p.x - BTN[bi].x, p.y - BTN[bi].y) < BTN[bi].r + 10) {
+                      hit = BTN[bi];
+                      break;
+                    }
+                  if (hit) {
+                    "rd" === hit.k
+                      ? ((X.rd = !0),
+                        setTimeout(function () {
+                          X.rd = !1;
+                        }, 90))
+                      : "q" === hit.k
+                        ? ((F.q = !0),
+                          setTimeout(function () {
+                            F.q = !1;
+                          }, 90))
+                        : ((F[" "] = !0),
+                          setTimeout(function () {
+                            F[" "] = !1;
+                          }, 150));
+                    continue;
+                  }
+                  (window.dismissDialogue(),
+                    p.x < 480 && null == mid
+                      ? ((mid = tt.identifier), (TM.o = p))
+                      : null == aid &&
+                        ((aid = tt.identifier), (AIM.o = p), (AIM.on = !0)));
+                }
+              },
+              { passive: !1 },
+            );
+            s.addEventListener(
+              "touchmove",
+              function (ev) {
+                ev.preventDefault();
+                for (var k2 = 0; k2 < ev.changedTouches.length; k2++) {
+                  var tt = ev.changedTouches[k2],
+                    p = tpos(tt);
+                  if (tt.identifier === mid) {
+                    var dx = p.x - TM.o.x,
+                      dy = p.y - TM.o.y,
+                      m2 = l(dx, dy);
+                    (TM.on = m2 > 8) && ((TM.x = dx / m2), (TM.y = dy / m2));
+                  } else if (tt.identifier === aid) {
+                    var ax = p.x - AIM.o.x,
+                      ay = p.y - AIM.o.y,
+                      am = l(ax, ay);
+                    am > 8 && ((AIM.dx = ax / am), (AIM.dy = ay / am));
+                  }
+                }
+              },
+              { passive: !1 },
+            );
+            var tend = function (ev) {
+              for (var k2 = 0; k2 < ev.changedTouches.length; k2++) {
+                var id = ev.changedTouches[k2].identifier;
+                id === mid
+                  ? ((mid = null), (TM.on = !1))
+                  : id === aid && ((aid = null), (AIM.on = !1), (X.ld = !1));
+              }
+            };
+            (s.addEventListener("touchend", tend),
+              s.addEventListener("touchcancel", tend));
+          }
           var pe = performance.now();
           function xe(s) {
-            if (1 === q)
+            if (1 === q && !PZ) {
+              RT += s;
               if (j > 0) j -= s;
               else {
                 var f = _ ? _.phase : 1;
@@ -911,7 +1151,12 @@
                   (F.s || F.arrowdown) && (h += 1),
                   (F.a || F.arrowleft) && (d -= 1),
                   (F.d || F.arrowright) && (d += 1));
+                TM.on && ((d = TM.x), (h = TM.y));
                 var p = 0 !== d || 0 !== h;
+                AIM.on &&
+                  ((X.x = M.x + 200 * AIM.dx),
+                  (X.y = M.y + 200 * AIM.dy),
+                  (X.ld = !0));
                 if (p) {
                   ((M.stillTimer = 0), (M.gallop += 14 * s));
                   var T = l(d, h),
@@ -1106,36 +1351,7 @@
                       (G.cleared = !0),
                       (q = 2),
                       (w.style.display = "flex"),
-                      (R.innerHTML = ""),
-                      N.filter(function (e) {
-                        return !M.boons[e[0]];
-                      })
-                        .sort(function () {
-                          return 0.5 - i();
-                        })
-                        .slice(0, 3)
-                        .forEach(function (e) {
-                          var t = document.createElement("div");
-                          ((t.className = "boon-card"),
-                            (t.innerHTML =
-                              '<div class="boon-title">' +
-                              e[1] +
-                              '</div><div class="boon-desc">' +
-                              e[2] +
-                              '</div><div class="boon-flavor">' +
-                              e[3] +
-                              "</div>"),
-                            (t.onclick = function () {
-                              ((M.boons[e[0]] = !0),
-                                H("boon"),
-                                (w.style.display = "none"),
-                                (q = 1),
-                                de([
-                                  ["VESPERA - ON " + e[1].toUpperCase(), e[3]],
-                                ]));
-                            }),
-                            R.appendChild(t));
-                        }));
+                      drawBoons());
                   }),
                   le.forEach(function (e) {
                     !e.rd &&
@@ -1534,6 +1750,7 @@
                   (b.style.height = (M.scytheTimer / M.scytheCd) * 100 + "%"),
                   (g.style.height = (M.dashTimer / M.dashCd) * 100 + "%"));
               }
+            }
           }
           function me(e) {
             if (
@@ -1578,10 +1795,9 @@
                 (M.pulseTimer = 0),
                 (M.scytheTimer = 0),
                 (M.boons = {}),
-                U.forEach(function (e) {
-                  e.cleared = !1;
-                }),
-                (U[0].cleared = !0),
+                (RT = 0),
+                (PZ = !1),
+                (U = genRun()),
                 (q = 1),
                 he(0),
                 de(D));
@@ -2007,6 +2223,62 @@
                     (f.fillStyle = v),
                     f.fillRect(0, 0, 960, 640),
                     f.restore());
+                  MUTE &&
+                    ((f.fillStyle = "#c084fc"),
+                    (f.font = "bold 12px sans-serif"),
+                    f.fillText("🔇 MUTED [M]", 48, 596));
+                  if (PZ) {
+                    ((f.fillStyle = "rgba(5,3,10,.82)"),
+                      f.fillRect(0, 0, 960, 640),
+                      (f.textAlign = "center"),
+                      (f.fillStyle = "#d8b4f8"),
+                      (f.font = "bold 34px sans-serif"),
+                      f.fillText("PAUSED", 480, 240),
+                      (f.font = "15px sans-serif"),
+                      (f.fillStyle = "#c4b5fd"),
+                      f.fillText("[M]  Sound: " + (MUTE ? "OFF" : "ON"), 480, 316),
+                      f.fillText(
+                        "[N]  Reduced Motion: " + (RM ? "ON" : "OFF"),
+                        480,
+                        346,
+                      ),
+                      f.fillText("[P]  Resume", 480, 388),
+                      (f.textAlign = "left"));
+                  }
+                  if (TCH && 1 === q) {
+                    (f.save(), (f.globalAlpha = 0.55), (f.textAlign = "center"));
+                    for (var bj = 0; bj < BTN.length; bj++) {
+                      var bb = BTN[bj];
+                      ((f.fillStyle = "rgba(30,15,45,.6)"),
+                        (f.strokeStyle = "#c084fc"),
+                        (f.lineWidth = 2),
+                        f.beginPath(),
+                        f.arc(bb.x, bb.y, bb.r, 0, n),
+                        f.fill(),
+                        f.stroke(),
+                        (f.fillStyle = "#e9d5ff"),
+                        (f.font = "bold 20px sans-serif"),
+                        f.fillText(bb.t, bb.x, bb.y + 7));
+                    }
+                    (TM.on &&
+                      ((f.fillStyle = "rgba(168,85,247,.5)"),
+                      f.beginPath(),
+                      f.arc(TM.o.x + 38 * TM.x, TM.o.y + 38 * TM.y, 20, 0, n),
+                      f.fill()),
+                      AIM.on &&
+                        ((f.fillStyle = "rgba(56,189,248,.5)"),
+                        f.beginPath(),
+                        f.arc(
+                          AIM.o.x + 38 * AIM.dx,
+                          AIM.o.y + 38 * AIM.dy,
+                          20,
+                          0,
+                          n,
+                        ),
+                        f.fill()),
+                      (f.textAlign = "left"),
+                      f.restore());
+                  }
                 })(),
                 requestAnimationFrame(l));
             }));
