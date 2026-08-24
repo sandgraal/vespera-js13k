@@ -25,13 +25,15 @@ The *Grand Concordat of Radiant Serenity* has criminalized naps, rain, and minor
 
 *(Landscape orientation recommended.)*
 
-## Features (v1.4)
-- **Procedurally generated runs** — room order, count, and enemy composition vary each run.
+## Features (v1.5)
+- **Procedurally generated runs** — room order, count, enemy mix, and Edicts vary each run.
 - **Cynical Boons** with a shard-funded **reroll** at altars.
-- **Buffed Somber Rainbow** — faster cooldown, wider cone, bigger arc.
+- **Full ability kit**: buffed Somber Rainbow (fast, wide arc), and a **Void Scythe forward slam**.
+- **Juicy combat** — enemy hit-flash, plus visible bullet-absorption on the Rainbow.
 - **Dramatic three-phase boss duel** with a **slow-motion finishing blow**.
 - **Sim pauses during dialogue**, so banter lands without unfair damage.
-- **Procedural victory lullaby** ("The Eternal Nap").
+- **8 Edict shrines** of dark satire, shown at random.
+- **Room-type visual tinting** and a **procedural victory lullaby** ("The Eternal Nap").
 - **Pause / options overlay**, **mute**, and a **Reduced Motion** toggle (auto-detects `prefers-reduced-motion`).
 - **Best clear-time & shard tracking** saved to `localStorage`.
 - Responsive canvas that scales to any viewport.

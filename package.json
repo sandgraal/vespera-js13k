@@ -1,6 +1,6 @@
 {
   "name": "vespera-js13k",
-  "version": "1.4.1",
+  "version": "1.5.0",
   "description": "A darkly satirical top-down action-roguelite for js13kGames 2026",
   "main": "index.html",
   "scripts": {

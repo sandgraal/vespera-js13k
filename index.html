@@ -406,8 +406,8 @@
             Spire and claim uninterrupted peace.
             <br /><br />
             <b style="color: #d8b4f8; font-size: 12px"
-              >v1.4 — Somber Rainbow buff · Dramatic boss duel · Slow-mo finish
-              · Victory theme</b
+              >v1.5 — Void Scythe slam · Enemy hit-flash · More Edicts · Room
+              variety</b
             >
           </div>
           <button
@@ -596,6 +596,26 @@
                 "Gothic architecture and somber cello pieces are acoustic terrorism.",
                 "I just wanted to play minor pentatonic scales in peace.",
               ],
+              [
+                "EDICT #256",
+                "Frowning in public now carries 40 hours of mandatory improv.",
+                "I requested the death penalty. They laughed. It counted as participation.",
+              ],
+              [
+                "MEMO #13",
+                "Yawning is reclassified as silent protest against Wakefulness.",
+                "I have not slept in years. My yawns are load-bearing.",
+              ],
+              [
+                "EDICT #900",
+                "The color grey is hereby renamed 'Off-White (Pending Review)'.",
+                "They painted over my shadow. It grew back. I was fined for vandalism.",
+              ],
+              [
+                "DECREE #7",
+                "Minor keys are contraband. All melodies must resolve upward.",
+                "I hummed one diminished chord. The park bench sighed in solidarity.",
+              ],
             ],
             N = [
               [
@@ -658,7 +678,7 @@
               pulseTimer: 0,
               pulseCd: 0.85,
               scytheTimer: 0,
-              scytheCd: 4.5,
+              scytheCd: 3.2,
               dashTimer: 0,
               dashCd: 1,
               isDashing: !1,
@@ -669,8 +689,7 @@
               boons: {},
             };
           function genRun() {
-            var rooms = [{ type: "start", cleared: !0, tId: 0 }],
-              ed = 1,
+            var rooms = [{ type: "start", cleared: !0, tId: (O.length * i()) | 0 }],
               segs = 2 + ((2 * i()) | 0),
               sgi,
               c,
@@ -686,7 +705,7 @@
               rooms.push({
                 type: "altar",
                 cleared: !1,
-                tId: ed < O.length ? ed++ : void 0,
+                tId: (O.length * i()) | 0,
               });
             }
             rooms.push({ type: "boss", cleared: !1, w: 1 });
@@ -1282,7 +1301,19 @@
                         s > o;
                       )
                         s = e.abs(s - n);
-                      return !(a < 300 && s < 0.95);
+                      var eaten = a < 300 && s < 0.95;
+                      eaten &&
+                        Q.push({
+                          x: t.x,
+                          y: t.y,
+                          vx: 0,
+                          vy: 0,
+                          r: 6,
+                          col: "#e0f2fe",
+                          a: 1,
+                          d: 3.5,
+                        });
+                      return !eaten;
                     })),
                     te.forEach(function (t) {
                       for (
@@ -1296,6 +1327,7 @@
                         var f = 35;
                         (t.isShielded && (f = e.floor(0.25 * f)),
                           (t.hp -= f),
+                          (t.hf = 0.1),
                           (t.grumpyTimer = 10),
                           Q.push({
                             x: t.x,
@@ -1349,23 +1381,39 @@
                     M.scytheTimer <= 0 &&
                     ((M.scytheTimer = M.scytheCd),
                     H("scythe"),
-                    fe(5),
-                    $.push({ x: M.x, y: M.y, r: 90, a: 1 }),
+                    fe(6),
+                    $.push({
+                      x: M.x + 70 * t(M.facing),
+                      y: M.y + 70 * a(M.facing),
+                      r: 120,
+                      a: 1,
+                    }),
                     (K = K.filter(function (e) {
-                      return l(e.x - M.x, e.y - M.y) > 95;
+                      return (
+                        l(
+                          e.x - M.x - 70 * t(M.facing),
+                          e.y - M.y - 70 * a(M.facing),
+                        ) > 125
+                      );
                     })),
                     te.forEach(function (e) {
-                      if (l(e.x - M.x, e.y - M.y) < 95 + e.r) {
-                        ((e.hp -= 60), (j = 0.04));
+                      if (
+                        l(
+                          e.x - M.x - 70 * t(M.facing),
+                          e.y - M.y - 70 * a(M.facing),
+                        ) <
+                        120 + e.r
+                      ) {
+                        ((e.hp -= 70), (e.hf = 0.1), (j = 0.05));
                         var i = r(e.y - M.y, e.x - M.x);
-                        ((e.x += 50 * t(i)),
-                          (e.y += 50 * a(i)),
+                        ((e.x += 55 * t(i)),
+                          (e.y += 55 * a(i)),
                           Q.push({
                             x: e.x,
                             y: e.y,
                             vx: 0,
                             vy: -35,
-                            txt: "-60",
+                            txt: "-70",
                             col: "#f43f5e",
                             lf: 0.6,
                           }));
@@ -1445,6 +1493,7 @@
                       if (
                         (pe.isShielded && (xe = e.floor(0.25 * xe)),
                         (pe.hp -= xe),
+                        (pe.hf = 0.1),
                         H("hit"),
                         Q.push({
                           x: pe.x,
@@ -1510,6 +1559,7 @@
                   } else {
                     var ke = r(M.y - we.y, M.x - we.x),
                       Pe = l(M.x - we.x, M.y - we.y);
+                    we.hf > 0 && (we.hf -= s);
                     we.grumpyTimer > 0 &&
                       ((we.grumpyTimer -= s),
                       i() < 0.03 &&
@@ -1866,7 +1916,13 @@
                       f.lineTo(920, s),
                       f.stroke());
                   if (
-                    ((f.strokeStyle = "#7c3aed"),
+                    ((f.strokeStyle = G
+                      ? "boss" === G.type
+                        ? "#ff5577"
+                        : "altar" === G.type
+                          ? "#c084fc"
+                          : "#7c3aed"
+                      : "#7c3aed"),
                     (f.lineWidth = 6),
                     f.strokeRect(40, 40, 880, 560),
                     G &&
@@ -2102,6 +2158,13 @@
                           ((f.fillStyle = "#94a3b8"),
                           (f.font = "bold 12px sans-serif"),
                           f.fillText("🌧️", -8, -e.r - 16)),
+                        e.hf > 0 &&
+                          ((f.globalAlpha = 8 * e.hf),
+                          (f.fillStyle = "#fff"),
+                          f.beginPath(),
+                          f.arc(0, 0, e.r, 0, n),
+                          f.fill(),
+                          (f.globalAlpha = 1)),
                         f.restore());
                     }),
                     1 === q || 2 === q)
